@@ -61,10 +61,20 @@ export default function LoginPage() {
         role,
       };
 
-      // Set cookies for middleware
-      document.cookie = `auth_token=${mockToken}; path=/`;
-      document.cookie = `user_role=${role}; path=/`;
+      // Ask the backend to set an HttpOnly auth cookie and store minimal user info client-side
+      try {
+        await fetch('/api/auth/session', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: mockToken, role }),
+        });
+      } catch (err) {
+        // Backend unavailable; continue without setting insecure client cookies.
+        console.warn('Auth session API unavailable; continuing without HttpOnly cookie.');
+      }
 
+      // Keep token in-memory for current session only (not persisted)
       login(mockToken, mockUser as import('@/lib/types').User);
       toast.success('Login successful');
       
@@ -85,9 +95,17 @@ export default function LoginPage() {
       if (address) {
         const mockToken = 'mock_jwt_token_12345';
         const role = 'merchant';
-        document.cookie = `auth_token=${mockToken}; path=/`;
-        document.cookie = `user_role=${role}; path=/`;
-        
+        try {
+          await fetch('/api/auth/session', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: mockToken, role }),
+          });
+        } catch (err) {
+          console.warn('Auth session API unavailable; continuing without HttpOnly cookie.');
+        }
+
         login(mockToken, { 
           id: address, 
           email: `${address.substring(0,6)}...${address.slice(-4)}@freighter.app`, 
