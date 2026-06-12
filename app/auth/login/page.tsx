@@ -9,8 +9,11 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { toast } from 'sonner';
+
 import { loginSchema, LoginFormValues } from '@/lib/utils/validation';
 import { useAuthStore } from '@/lib/store/authStore';
+import { useWalletStore } from '@/lib/store/walletStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,7 +22,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuthStore();
+  const { connect } = useWalletStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [isWalletLoading, setIsWalletLoading] = useState(false);
 
   const {
     register,
@@ -74,26 +79,43 @@ export default function LoginPage() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-[400px] z-10"
-      >
-        <div className="flex justify-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center shadow-2xl relative">
-            <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl" />
-            <ShieldCheck className="w-8 h-8 text-primary relative z-10" />
-          </div>
-        </div>
+  const handleFreighterLogin = async () => {
+    setIsWalletLoading(true);
+    try {
+      await connect();
+      const address = useWalletStore.getState().address;
+      if (address) {
+        const mockToken = 'mock_jwt_token_12345';
+        const role = 'merchant';
+        document.cookie = `auth_token=${mockToken}; path=/`;
+        document.cookie = `user_role=${role}; path=/`;
+        
+        login(mockToken, { 
+          id: address, 
+          email: `${address.substring(0,6)}...${address.slice(-4)}@freighter.app`, 
+          name: 'Web3 Merchant', 
+          role 
+        });
+        toast.success('Wallet connected & Logged in!');
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to connect wallet');
+    } finally {
+      setIsWalletLoading(false);
+    }
+  };
 
-        <Card className="border-white/10 bg-zinc-900/50 backdrop-blur-xl shadow-2xl rounded-2xl overflow-hidden">
-          <CardHeader className="space-y-2 text-center pb-8 pt-8">
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="w-full"
+    >
+      <Card className="border-white/10 bg-zinc-900/50 backdrop-blur-xl shadow-2xl rounded-2xl overflow-hidden">
+        <CardHeader className="space-y-2 text-center pb-8 pt-8">
             <CardTitle className="text-3xl font-bold tracking-tight text-white">Welcome back</CardTitle>
             <CardDescription className="text-zinc-400 text-base">
               Sign in to manage your payments
@@ -133,11 +155,32 @@ export default function LoginPage() {
               <Button 
                 type="submit" 
                 className="w-full h-12 text-base font-medium bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(240,165,0,0.3)] transition-all hover:shadow-[0_0_25px_rgba(240,165,0,0.5)]" 
-                disabled={isLoading}
+                disabled={isLoading || isWalletLoading}
               >
                 {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
                 Sign In
               </Button>
+              
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-white/10" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-zinc-900/80 px-2 text-zinc-500">Or continue with</span>
+                </div>
+              </div>
+
+              <Button 
+                type="button" 
+                variant="outline"
+                className="w-full h-12 text-base font-medium bg-zinc-950/50 border-white/10 text-white hover:bg-zinc-900 hover:text-primary transition-all"
+                onClick={handleFreighterLogin}
+                disabled={isLoading || isWalletLoading}
+              >
+                {isWalletLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
+                Freighter Wallet
+              </Button>
+
               <div className="text-sm text-center text-zinc-400">
                 Don&apos;t have an account?{' '}
                 <Link href="/auth/register" className="text-white hover:text-primary transition-colors font-medium">
@@ -146,8 +189,7 @@ export default function LoginPage() {
               </div>
             </CardFooter>
           </form>
-        </Card>
-      </motion.div>
-    </div>
+      </Card>
+    </motion.div>
   );
 }
