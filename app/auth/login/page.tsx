@@ -12,7 +12,6 @@ import dynamic from 'next/dynamic';
 
 import { loginSchema, LoginFormValues } from '@/lib/utils/validation';
 import { useAuthStore } from '@/lib/store/authStore';
-import { useWalletStore } from '@/lib/store/walletStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,7 +21,6 @@ const WalletModal = dynamic(() => import('@/components/wallet/WalletModal').then
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuthStore();
-  const { connect } = useWalletStore();
   const [isLoading, setIsLoading] = useState(false);
   const [isWalletLoading, setIsWalletLoading] = useState(false);
   const [walletModalOpen, setWalletModalOpen] = useState(false);
@@ -123,24 +121,6 @@ export default function LoginPage() {
     }
   };
 
-  // kept for backward compatibility but no longer used directly
-  const handleFreighterLogin = async () => {
-    setIsWalletLoading(true);
-    try {
-      await connect();
-      const address = useWalletStore.getState().address;
-      if (address) {
-        await onWalletConnected(address);
-      } else {
-        toast.error('Wallet connection was cancelled or Freighter is not installed.');
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to connect wallet');
-    } finally {
-      setIsWalletLoading(false);
-    }
-  };
 
   return (
     <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
