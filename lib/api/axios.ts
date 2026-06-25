@@ -1,5 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '../store/authStore';
+import { useRateLimitStore } from '../store/rateLimitStore';
 import { toast } from 'sonner';
 import { getCsrfTokenFromCookie, CSRF_HEADER_NAME } from '../utils/csrf';
 
@@ -89,6 +90,14 @@ apiClient.interceptors.response.use(
       } finally {
         isRefreshing = false;
       }
+    }
+
+    // Handle 429 rate limiting
+    if (error.response?.status === 429) {
+      const retryAfter = error.response.headers['retry-after'];
+      const seconds = parseInt(retryAfter, 10) || 30;
+      useRateLimitStore.getState().setRateLimited(seconds);
+      toast.error(`Too many attempts. Please try again in ${seconds} seconds.`);
     }
 
     // Show toast for network errors
