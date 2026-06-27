@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CopyAddress } from '@/components/shared/CopyAddress';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { ErrorDisplay } from '@/components/shared/ErrorDisplay';
 import { Plus, MoreHorizontal, QrCode, Link2 } from 'lucide-react';
 import {
   Dialog,
@@ -21,9 +22,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useNotify } from '@/lib/hooks/useNotify';
 
 export default function PaymentsPage() {
+  const { notify } = useNotify();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [labelError, setLabelError] = useState('');
   const [labelValue, setLabelValue] = useState('');
+  const [linksError, setLinksError] = useState(false);
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,51 +116,65 @@ export default function PaymentsPage() {
               </DialogFooter>
             </form>
           </DialogContent>
-        </Dialog>
-      </div>
+         </Dialog>
+         <Button 
+           variant="outline" 
+           className="w-full sm:w-auto"
+           onClick={() => setLinksError(!linksError)}
+         >
+           {linksError ? "Reset API" : "Simulate Error"}
+         </Button>
+       </div>
 
-      {mockLinks.length === 0 ? (
-        <EmptyState
-          icon={Link2}
-          title="No payment links yet"
-          description="Create your first payment link to start accepting crypto payments."
-          action={{ label: 'New Payment Link', onClick: () => setIsCreateOpen(true) }}
-        />
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {mockLinks.map((link) => (
-            <Card key={link.id} className="bg-brand-surface border-border/50 shadow-sm hover:border-brand-accent/50 transition-colors group">
-              <CardHeader className="flex flex-row items-start justify-between pb-2">
-                <div>
-                  <CardTitle className="text-base font-medium text-brand-text-primary line-clamp-1">{link.label}</CardTitle>
-                  <CardDescription className="mt-1">
-                    {link.type === 'fixed' ? `${link.amount} ${link.currency}` : 'Open amount'}
-                    <span className="hidden sm:inline"> · Created {link.created}</span>
-                  </CardDescription>
-                </div>
-                <Button variant="ghost" size="icon" aria-label="More options" className="h-8 w-8 text-muted-foreground -mt-2 -mr-2">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col gap-2 mt-4 sm:flex-row sm:items-center">
-                  <div className="flex-1 overflow-hidden min-w-0">
-                    <div className="text-xs text-muted-foreground truncate max-w-[180px] sm:max-w-full bg-muted/50 p-2 rounded border border-border/50 font-mono">
-                      {link.url}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <CopyAddress address={link.url} showIconOnly truncate={false} />
-                    <Button variant="outline" size="icon" aria-label="Show QR code" className="h-8 w-8 border-border/50 bg-background/50 text-muted-foreground hover:text-brand-text-primary">
-                      <QrCode className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+       {linksError ? (
+         <div className="py-12">
+           <ErrorDisplay
+             message="Failed to load payment links"
+             onRetry={() => setLinksError(false)}
+           />
+         </div>
+       ) : mockLinks.length === 0 ? (
+         <EmptyState
+           icon={Link2}
+           title="No payment links yet"
+           description="Create your first payment link to start accepting crypto payments."
+           action={{ label: 'New Payment Link', onClick: () => setIsCreateOpen(true) }}
+         />
+       ) : (
+         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+           {mockLinks.map((link) => (
+             <Card key={link.id} className="bg-brand-surface border-border/50 shadow-sm hover:border-brand-accent/50 transition-colors group">
+               <CardHeader className="flex flex-row items-start justify-between pb-2">
+                 <div>
+                   <CardTitle className="text-base font-medium text-brand-text-primary line-clamp-1">{link.label}</CardTitle>
+                   <CardDescription className="mt-1">
+                     {link.type === 'fixed' ? `${link.amount} ${link.currency}` : 'Open amount'}
+                     <span className="hidden sm:inline"> · Created {link.created}</span>
+                   </CardDescription>
+                 </div>
+                 <Button variant="ghost" size="icon" aria-label="More options" className="h-8 w-8 text-muted-foreground -mt-2 -mr-2">
+                   <MoreHorizontal className="h-4 w-4" />
+                 </Button>
+               </CardHeader>
+               <CardContent>
+                 <div className="flex flex-col gap-2 mt-4 sm:flex-row sm:items-center">
+                   <div className="flex-1 overflow-hidden min-w-0">
+                     <div className="text-xs text-muted-foreground truncate max-w-[180px] sm:max-w-full bg-muted/50 p-2 rounded border border-border/50 font-mono">
+                       {link.url}
+                     </div>
+                   </div>
+                   <div className="flex items-center gap-2 flex-shrink-0">
+                     <CopyAddress address={link.url} showIconOnly truncate={false} />
+                     <Button variant="outline" size="icon" aria-label="Show QR code" className="h-8 w-8 border-border/50 bg-background/50 text-muted-foreground hover:text-brand-text-primary">
+                       <QrCode className="h-4 w-4" />
+                     </Button>
+                   </div>
+                 </div>
+               </CardContent>
+             </Card>
+           ))}
+         </div>
+       )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { NetworkTooltip } from '@/components/ui/network-tooltip';
@@ -16,6 +17,7 @@ import {
   Receipt,
 } from 'lucide-react';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { ErrorDisplay } from '@/components/shared/ErrorDisplay';
 import { useOfflineStore } from '@/lib/store/offlineStore';
 
 const mockSettlements = [
@@ -25,6 +27,7 @@ const mockSettlements = [
 ];
 
 export default function SettlementPage() {
+  const [settlementsError, setSettlementsError] = useState(false);
   const isOnline = useOfflineStore((s) => s.isOnline);
 
   return (
@@ -37,16 +40,23 @@ export default function SettlementPage() {
             Convert your USDC balance to Nigerian Naira and settle to your bank account.
           </p>
         </div>
-        <NetworkTooltip show={!isOnline}>
-          <Button
-            disabled={!isOnline}
-            aria-disabled={!isOnline}
-            className="bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl h-10 px-5 text-sm shadow-sm shadow-amber-200"
-          >
-            <Banknote className="w-4 h-4 mr-2" />
-            Initiate Settlement
-          </Button>
-        </NetworkTooltip>
+         <NetworkTooltip show={!isOnline}>
+           <Button
+             disabled={!isOnline}
+             aria-disabled={!isOnline}
+             className="bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl h-10 px-5 text-sm shadow-sm shadow-amber-200"
+           >
+             <Banknote className="w-4 h-4 mr-2" />
+             Initiate Settlement
+           </Button>
+         </NetworkTooltip>
+         <Button 
+           variant="outline" 
+           className="rounded-xl h-10 px-5 text-sm font-semibold text-slate-600"
+           onClick={() => setSettlementsError(!settlementsError)}
+         >
+           {settlementsError ? "Reset API" : "Simulate Error"}
+         </Button>
       </div>
 
       {/* Balance summary */}
@@ -99,34 +109,41 @@ export default function SettlementPage() {
             </Button>
           </NetworkTooltip>
         </CardHeader>
-        <CardContent>
-          {mockSettlements.length === 0 ? (
-            <EmptyState
-              icon={Receipt}
-              title="No settlements yet"
-              description="Your USDC → NGN conversion history will appear here once you initiate a settlement."
-            />
-          ) : (
-            <div className="space-y-3">
-              {mockSettlements.map((s) => (
-                <div key={s.id} className="flex items-center gap-4 p-4 rounded-xl border border-slate-100 hover:border-slate-200 hover:bg-slate-50/50 transition-all">
-                  <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0">
-                    <Building2 className="w-5 h-5 text-slate-500" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-800">{s.bank} · {s.accountNo}</p>
-                    <p className="text-xs text-slate-400">{s.date}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-slate-900"><CurrencyDisplay amount={s.amount} /></p>
-                    <p className="text-xs text-slate-400">₦{s.amountNgn.toLocaleString()}</p>
-                  </div>
-                  <StatusBadge status={s.status as 'completed' | 'pending' | 'failed'} />
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
+         <CardContent>
+           {settlementsError ? (
+             <div className="py-12">
+               <ErrorDisplay
+                 message="Failed to load settlement history"
+                 onRetry={() => setSettlementsError(false)}
+               />
+             </div>
+           ) : mockSettlements.length === 0 ? (
+             <EmptyState
+               icon={Receipt}
+               title="No settlements yet"
+               description="Your USDC → NGN conversion history will appear here once you initiate a settlement."
+             />
+           ) : (
+             <div className="space-y-3">
+               {mockSettlements.map((s) => (
+                 <div key={s.id} className="flex items-center gap-4 p-4 rounded-xl border border-slate-100 hover:border-slate-200 hover:bg-slate-50/50 transition-all">
+                   <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0">
+                     <Building2 className="w-5 h-5 text-slate-500" />
+                   </div>
+                   <div className="flex-1 min-w-0">
+                     <p className="text-sm font-semibold text-slate-800">{s.bank} · {s.accountNo}</p>
+                     <p className="text-xs text-slate-400">{s.date}</p>
+                   </div>
+                   <div className="text-right">
+                     <p className="text-sm font-bold text-slate-900"><CurrencyDisplay amount={s.amount} /></p>
+                     <p className="text-xs text-slate-400">₦{s.amountNgn.toLocaleString()}</p>
+                   </div>
+                   <StatusBadge status={s.status as 'completed' | 'pending' | 'failed'} />
+                 </div>
+               ))}
+             </div>
+           )}
+         </CardContent>
       </Card>
 
       {/* Bank account config notice */}

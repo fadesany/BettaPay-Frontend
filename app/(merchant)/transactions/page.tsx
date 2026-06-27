@@ -9,6 +9,7 @@ import { NetworkTooltip } from '@/components/ui/network-tooltip';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { CopyAddress } from '@/components/shared/CopyAddress';
 import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
+import { ErrorDisplay } from '@/components/shared/ErrorDisplay';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { mockTransactions } from '@/lib/mock/transactions';
 import { formatDate } from '@/lib/utils/format';
@@ -21,6 +22,7 @@ export default function TransactionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCount] = useState(0);
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
+  const [txError, setTxError] = useState(false);
   const isOnline = useOfflineStore((s) => s.isOnline);
 
   const filteredTransactions = mockTransactions.filter(tx =>
@@ -62,17 +64,24 @@ export default function TransactionsPage() {
                 </span>
               )}
             </Button>
-            <NetworkTooltip show={!isOnline}>
-              <Button
-                variant="outline"
-                disabled={!isOnline}
-                aria-disabled={!isOnline}
-                className="flex-1 sm:flex-none border-border/50 bg-brand-surface"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Export CSV
-              </Button>
-            </NetworkTooltip>
+             <NetworkTooltip show={!isOnline}>
+               <Button
+                 variant="outline"
+                 disabled={!isOnline}
+                 aria-disabled={!isOnline}
+                 className="flex-1 sm:flex-none border-border/50 bg-brand-surface"
+               >
+                 <Download className="w-4 h-4 mr-2" />
+                 Export CSV
+               </Button>
+             </NetworkTooltip>
+             <Button 
+               variant="outline" 
+               className="flex-1 sm:flex-none border-border/50 bg-brand-surface"
+               onClick={() => setTxError(!txError)}
+             >
+               {txError ? "Reset API" : "Simulate Error"}
+             </Button>
           </div>
         </div>
       </div>
@@ -92,58 +101,69 @@ export default function TransactionsPage() {
                   <TableHead className="text-center">Status</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
-                {filteredTransactions.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="p-0">
-                      <EmptyState
-                        icon={SearchX}
-                        title={searchTerm ? 'No transactions match your search' : 'No transactions found'}
-                        description={
-                          searchTerm
-                            ? 'Try adjusting your search terms or clearing filters.'
-                            : 'Transactions will appear here once payments are received.'
-                        }
-                        action={
-                          searchTerm
-                            ? { label: 'Clear search', onClick: () => setSearchTerm('') }
-                            : undefined
-                        }
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredTransactions.map((tx) => (
-                    <TableRow 
-                      key={tx.id} 
-                      className="border-border/50 hover:bg-muted/30 cursor-pointer"
-                      onClick={() => setSelectedTx(tx)}
-                    >
-                      <TableCell className="text-muted-foreground whitespace-nowrap">
-                        {formatDate(tx.timestamp)}
-                      </TableCell>
-                      <TableCell>
-                        <CopyAddress address={tx.payerAddress} />
-                      </TableCell>
-                      <TableCell>
-                        <CopyAddress address={tx.txHash} />
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {tx.source}
-                      </TableCell>
-                      <TableCell className="text-right font-medium">
-                        <CurrencyDisplay amount={tx.amountUsdc} currency="USDC" />
-                      </TableCell>
-                      <TableCell className="text-right text-muted-foreground">
-                        <CurrencyDisplay amount={tx.amountNgn} currency="NGN" showDecimals={false} />
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <StatusBadge status={tx.status} />
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
+               <TableBody>
+                 {txError ? (
+                   <TableRow>
+                     <TableCell colSpan={7} className="p-0">
+                       <div className="py-12">
+                         <ErrorDisplay
+                           message="Failed to load transactions"
+                           onRetry={() => setTxError(false)}
+                         />
+                       </div>
+                     </TableCell>
+                   </TableRow>
+                 ) : filteredTransactions.length === 0 ? (
+                   <TableRow>
+                     <TableCell colSpan={7} className="p-0">
+                       <EmptyState
+                         icon={SearchX}
+                         title={searchTerm ? 'No transactions match your search' : 'No transactions found'}
+                         description={
+                           searchTerm
+                             ? 'Try adjusting your search terms or clearing filters.'
+                             : 'Transactions will appear here once payments are received.'
+                         }
+                         action={
+                           searchTerm
+                             ? { label: 'Clear search', onClick: () => setSearchTerm('') }
+                             : undefined
+                         }
+                       />
+                     </TableCell>
+                   </TableRow>
+                 ) : (
+                   filteredTransactions.map((tx) => (
+                     <TableRow 
+                       key={tx.id} 
+                       className="border-border/50 hover:bg-muted/30 cursor-pointer"
+                       onClick={() => setSelectedTx(tx)}
+                     >
+                       <TableCell className="text-muted-foreground whitespace-nowrap">
+                         {formatDate(tx.timestamp)}
+                       </TableCell>
+                       <TableCell>
+                         <CopyAddress address={tx.payerAddress} />
+                       </TableCell>
+                       <TableCell>
+                         <CopyAddress address={tx.txHash} />
+                       </TableCell>
+                       <TableCell className="text-muted-foreground">
+                         {tx.source}
+                       </TableCell>
+                       <TableCell className="text-right font-medium">
+                         <CurrencyDisplay amount={tx.amountUsdc} currency="USDC" />
+                       </TableCell>
+                       <TableCell className="text-right text-muted-foreground">
+                         <CurrencyDisplay amount={tx.amountNgn} currency="NGN" showDecimals={false} />
+                       </TableCell>
+                       <TableCell className="text-center">
+                         <StatusBadge status={tx.status} />
+                       </TableCell>
+                     </TableRow>
+                   ))
+                 )}
+               </TableBody>
             </Table>
           </div>
         </CardContent>
