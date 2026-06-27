@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
@@ -8,11 +9,11 @@ import {
   ArrowDownLeft,
   Copy,
   RefreshCcw,
-  ShieldCheck,
   ExternalLink,
   Inbox,
 } from 'lucide-react';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { ErrorDisplay } from '@/components/shared/ErrorDisplay';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/lib/store/authStore';
 
@@ -25,6 +26,7 @@ const mockTxHistory = [
 
 export default function WalletPage() {
   const { user } = useAuthStore();
+  const [balancesError, setBalancesError] = useState(false);
   const address = user?.id ?? 'GCCHHKNI7GRA5QWC7RCTT3OHO7SKAUMKQA6IBWEQEO2SXI3GF376UHDD';
   const shortAddress = `${address.substring(0, 8)}...${address.slice(-6)}`;
 
@@ -35,13 +37,24 @@ export default function WalletPage() {
 
   return (
     <div className="space-y-8 pb-8">
-      <div>
-        <p className="text-xs font-semibold tracking-widest text-amber-500 uppercase mb-1">Stellar Wallet</p>
-        <h1 className="text-3xl font-bold text-slate-900">My Wallet</h1>
-        <p className="text-slate-400 text-sm mt-1">
-          Your non-custodial Stellar wallet for receiving crypto payments.
-        </p>
-      </div>
+       <div>
+         <div className="flex items-center justify-between">
+           <div>
+             <p className="text-xs font-semibold tracking-widest text-amber-500 uppercase mb-1">Stellar Wallet</p>
+             <h1 className="text-3xl font-bold text-slate-900">My Wallet</h1>
+           </div>
+           <Button 
+             variant="outline" 
+             className="text-xs"
+             onClick={() => setBalancesError(!balancesError)}
+           >
+             {balancesError ? "Reset API" : "Simulate Error"}
+           </Button>
+         </div>
+         <p className="text-slate-400 text-sm mt-1">
+           Your non-custodial Stellar wallet for receiving crypto payments.
+         </p>
+       </div>
 
       {/* Wallet Card */}
       <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-6 text-white shadow-xl">
@@ -84,31 +97,40 @@ export default function WalletPage() {
         </div>
       </div>
 
-      {/* Balances */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        {[
-          { label: 'USDC', amount: 12450.00, icon: '💵', change: '+12.4%' },
-          { label: 'XLM', amount: 245.89, icon: '⭐', change: '-2.1%' },
-          { label: 'NGN (Pending)', amount: 19297500, icon: '🇳🇬', change: null },
-        ].map(({ label, amount, icon, change }) => (
-          <Card key={label} className="border border-slate-200 bg-white shadow-sm">
-            <CardContent className="flex items-center gap-3 p-4">
-              <div className="text-2xl">{icon}</div>
-              <div className="flex-1">
-                <p className="text-xs text-slate-400 font-medium">{label}</p>
-                <p className="text-lg font-bold text-slate-900">
-                  {label === 'NGN (Pending)' ? `₦${amount.toLocaleString()}` : amount.toFixed(2)}
-                </p>
-              </div>
-              {change && (
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${change.startsWith('+') ? 'text-emerald-600 bg-emerald-50' : 'text-red-500 bg-red-50'}`}>
-                  {change}
-                </span>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+       {/* Balances */}
+       {balancesError ? (
+         <div className="py-8">
+           <ErrorDisplay
+             message="Failed to load wallet balances"
+             onRetry={() => setBalancesError(false)}
+           />
+         </div>
+       ) : (
+         <div className="grid gap-4 sm:grid-cols-3">
+           {[
+             { label: 'USDC', amount: 12450.00, icon: '💵', change: '+12.4%' },
+             { label: 'XLM', amount: 245.89, icon: '⭐', change: '-2.1%' },
+             { label: 'NGN (Pending)', amount: 19297500, icon: '🇳🇬', change: null },
+           ].map(({ label, amount, icon, change }) => (
+             <Card key={label} className="border border-slate-200 bg-white shadow-sm">
+               <CardContent className="flex items-center gap-3 p-4">
+                 <div className="text-2xl">{icon}</div>
+                 <div className="flex-1">
+                   <p className="text-xs text-slate-400 font-medium">{label}</p>
+                   <p className="text-lg font-bold text-slate-900">
+                     {label === 'NGN (Pending)' ? `₦${amount.toLocaleString()}` : amount.toFixed(2)}
+                   </p>
+                 </div>
+                 {change && (
+                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${change.startsWith('+') ? 'text-emerald-600 bg-emerald-50' : 'text-red-500 bg-red-50'}`}>
+                     {change}
+                   </span>
+                 )}
+               </CardContent>
+             </Card>
+           ))}
+         </div>
+       )}
 
       {/* Transaction history */}
       <Card className="border border-slate-200 bg-white shadow-sm">
