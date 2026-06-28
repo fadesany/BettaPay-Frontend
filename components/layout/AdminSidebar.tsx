@@ -28,7 +28,7 @@ export const AdminSidebar = () => {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-full w-64 flex-col bg-sidebar border-r border-sidebar-border hidden md:flex">
+    <aside className="flex h-full w-64 flex-col bg-sidebar border-r border-sidebar-border hidden md:flex" role="navigation" aria-label="Main navigation">
       <div className="p-6">
         <Link href="/overview" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded bg-primary flex items-center justify-center">

@@ -8,16 +8,16 @@ export default function RootLoading() {
         <div className="relative w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center shadow-md animate-pulse">
           <img
             src="/logo.png"
-            alt="BettaPay Logo"
+            alt="BettaPay"
             className="w-10 h-10 object-contain"
           />
         </div>
-        
+
         {/* Brand name */}
         <h1 className="text-xl font-bold tracking-tight text-slate-900">
           BettaPay
         </h1>
-        
+
         {/* Lightweight custom spinner */}
         <div className="w-6 h-6 border-2 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
       </div>
