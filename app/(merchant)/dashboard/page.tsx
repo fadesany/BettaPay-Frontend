@@ -407,14 +407,17 @@ export default function DashboardPage() {
                 {mockPaymentLinks.map((link) => {
                   const conversionRate = Math.round((link.converted / link.clicks) * 100);
                   return (
-                    <div key={link.id} className="flex items-center gap-4 p-3 rounded-xl border border-border hover:border-border hover:bg-muted/50 transition-all group">
+                    <Link
+                      key={link.id}
+                      href={`/payments/${link.id}`}
+                      className="flex items-center gap-4 p-3 rounded-xl border border-border hover:border-border hover:bg-muted/50 transition-all group"
+                    >
                       <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0">
                         <CreditCard className="w-4 h-4 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-foreground truncate">{link.label}</p>
                         <p className="text-xs text-muted-foreground font-mono truncate">{link.url}</p>
-                        {/* Conversion bar */}
                         <div className="flex items-center gap-2 mt-1.5">
                           <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                             <div
@@ -430,16 +433,14 @@ export default function DashboardPage() {
                         <span className="text-xs text-muted-foreground">{link.clicks} clicks</span>
                       </div>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="icon" aria-label="Copy payment link" className="min-h-[44px] min-w-[44px] rounded-lg" onClick={() => handleCopy(`https://${link.url}`)}>
+                        <Button variant="ghost" size="icon" aria-label="Copy payment link" className="min-h-[44px] min-w-[44px] rounded-lg" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCopy(`https://${link.url}`); }}>
                           <Copy className="w-3 h-3 text-muted-foreground" />
                         </Button>
-                        <Link href={`https://${link.url}`} target="_blank">
-                          <Button variant="ghost" size="icon" aria-label="Open payment link" className="min-h-[44px] min-w-[44px] rounded-lg">
-                            <ExternalLink className="w-3 h-3 text-muted-foreground" />
-                          </Button>
-                        </Link>
+                        <Button variant="ghost" size="icon" aria-label="Open payment link" className="min-h-[44px] min-w-[44px] rounded-lg" onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(`https://${link.url}`, '_blank'); }}>
+                          <ExternalLink className="w-3 h-3 text-muted-foreground" />
+                        </Button>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
