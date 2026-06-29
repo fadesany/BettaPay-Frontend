@@ -1,17 +1,21 @@
-Add useCallback for event handlers in dashboard and settings
+Replace all tags with next/image
 Repo Avatar
 Betta-Pay/BettaPay-Frontend
-Description: Inline functions passed as props (e.g., onClick, onChange, handleCopy) create new function references on every render, causing child components to re-render even with React.memo. Wrapping these in useCallback stabilizes the references.
+Description: The project uses rawtags in several places (app/auth/layout.tsx, app/(merchant)/wallet/page.tsx, app/page.tsx). Next.js's component provides automatic WebP/AVIF conversion, responsive sizing, lazy loading, and blur-up placeholders — all of which improve LCP (Largest Contentful Paint) and overall performance.
 
 Requirements:
 
-Wrap handleCopy, handleLogout, onSubmit, and other handlers in useCallback
-Include correct dependency arrays
-Apply across all pages with interactive elements
+Replace everytag with from next/image
+Add explicit width and height attributes to each Image
+Use priority on above-the-fold images (logo in auth layout, landing page hero)
+Use placeholder="blur" with a blurDataURL for important images
+Keep the existing alt text
 Suggested execution steps:
 
-In app/(merchant)/dashboard/page.tsx, wrap handleCopy and the period toggle handler in useCallback
-In app/(merchant)/settings/page.tsx, wrap handleLogout and tab change handlers
-In app/auth/login/page.tsx, wrap onSubmit and onWalletConnected
-In components/layout/Topbar.tsx, wrap handleLogout
-Use React DevTools Profiler to verify fewer re-renders
+Import Image from next/image in every file with tags
+Replace
+DRIPS LOGO
+with
+For the logo: add priority since it's in the header of every auth page
+For wallet page logo: add width={32} height={32}
+Run npm run build to verify no image-related errors
