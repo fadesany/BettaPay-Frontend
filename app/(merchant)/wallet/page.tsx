@@ -1,113 +1,25 @@
 "use client";
 
+import dynamic from 'next/dynamic';
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { CurrencyDisplay } from "@/components/shared/CurrencyDisplay";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ErrorDisplay } from "@/components/shared/ErrorDisplay";
-import { EmptyState } from "@/components/shared/EmptyState";
 import {
-  ArrowUpRight,
-  ArrowDownLeft,
   Copy,
-  RefreshCcw,
   ExternalLink,
-  Inbox,
-  Wallet,
 } from "lucide-react";
 import { useNotify } from "@/lib/hooks/useNotify";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useWalletStore } from "@/lib/store/walletStore";
 import Image from "next/image";
-import { memo, useEffect, useCallback } from "react";
 
-interface WalletTx {
-  id: string;
-  type: "receive" | "send";
-  label: string;
-  amount: number;
-  time: string;
-}
-
-const WalletActivityItem = memo(function WalletActivityItem({ tx }: { tx: WalletTx }) {
-  return (
-    <div
-      className="flex items-center gap-3 py-2.5 px-2 rounded-xl hover:bg-muted transition-colors"
-    >
-      <div
-        className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${tx.type === "receive" ? "bg-emerald-100" : "bg-primary/20"}`}
-      >
-        {tx.type === "receive" ? (
-          <ArrowDownLeft className="w-4 h-4 text-emerald-600" />
-        ) : (
-          <ArrowUpRight className="w-4 h-4 text-primary" />
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-foreground">
-          {tx.label}
-        </p>
-        <p className="text-xs text-muted-foreground">{tx.time}</p>
-      </div>
-      <span
-        className={`text-sm font-semibold ${tx.type === "receive" ? "text-emerald-600" : "text-foreground"}`}
-      >
-        {tx.type === "receive" ? "+" : "-"}
-        {tx.amount.toFixed(2)} USDC
-      </span>
-    </div>
-  );
+const WalletActivityHistory = dynamic(() => import('@/components/wallet/WalletActivityHistory').then(m => ({ default: m.WalletActivityHistory })), {
+  loading: () => <Skeleton className="h-64 rounded-xl" />,
 });
-
-const mockTxHistory: WalletTx[] = [
-  {
-    id: "w1",
-    type: "receive",
-    label: "Payment from link_02",
-    amount: 45.5,
-    time: "2h ago",
-  },
-  {
-    id: "w2",
-    type: "receive",
-    label: "Payment from link_01",
-    amount: 750,
-    time: "5h ago",
-  },
-  {
-    id: "w3",
-    type: "send",
-    label: "Settlement to GTBank",
-    amount: 1200,
-    time: "Yesterday",
-  },
-  {
-    id: "w4",
-    type: "receive",
-    label: "Payment from link_03",
-    amount: 29,
-    time: "Yesterday",
-  },
-];
-
-function BalanceSkeleton() {
-  return (
-    <Card className="border border-border bg-card shadow-sm">
-      <CardContent className="flex items-center gap-3 p-4">
-        <Skeleton className="w-10 h-10 rounded-xl" />
-        <div className="flex-1 space-y-2">
-          <Skeleton className="h-3 w-16" />
-          <Skeleton className="h-5 w-24" />
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
 export default function WalletPage() {
   const { user } = useAuthStore();
@@ -315,39 +227,7 @@ export default function WalletPage() {
       )}
 
       {/* Transaction history */}
-      <Card className="border border-border bg-card shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="text-base font-semibold text-foreground">
-              Wallet Activity
-            </CardTitle>
-            <CardDescription>Recent on-chain transactions</CardDescription>
-          </div>
-          <Button
-            variant="ghost"
-            aria-label="Refresh balances"
-            className="text-xs text-muted-foreground h-7 px-2 rounded-lg"
-            onClick={handleRefresh}
-          >
-            <RefreshCcw className="w-3 h-3 mr-1.5" /> Refresh
-          </Button>
-        </CardHeader>
-        <CardContent>
-          {mockTxHistory.length === 0 ? (
-            <EmptyState
-              icon={Inbox}
-              title="No wallet activity yet"
-              description="On-chain transactions will appear here once your wallet receives payments."
-            />
-          ) : (
-            <div className="space-y-2">
-              {mockTxHistory.map((tx) => (
-                <WalletActivityItem key={tx.id} tx={tx} />
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <WalletActivityHistory />
     </div>
   );
 }
