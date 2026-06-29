@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { AssetBalance } from '../types';
 import { connectFreighter } from '@/lib/stellar/freighter';
+import { HORIZON_URL } from '../utils/constants';
 
 type Connector = 'freighter' | 'walletconnect' | null;
 
@@ -10,6 +11,8 @@ interface WalletState {
   connector: Connector;
   network: 'mainnet' | 'testnet';
   balances: AssetBalance[];
+  loading: boolean;
+  error: string | null;
   connect: (connector?: Connector) => Promise<void>;
   disconnect: () => void;
   refreshBalances: () => Promise<void>;
@@ -21,8 +24,9 @@ export const useWalletStore = create<WalletState>((set, get) => ({
   connector: null,
   network: (process.env.NEXT_PUBLIC_STELLAR_NETWORK as 'mainnet' | 'testnet') || 'testnet',
   balances: [],
+  loading: false,
+  error: null,
 
-  // connect supports specifying a connector. Defaults to freighter when omitted.
   connect: async (connector: Connector = 'freighter') => {
     try {
       if (connector === 'freighter') {
@@ -34,8 +38,6 @@ export const useWalletStore = create<WalletState>((set, get) => ({
           throw new Error('Freighter connection failed or was cancelled');
         }
       } else if (connector === 'walletconnect') {
-        // Placeholder lightweight WalletConnect support: prompt for public key until full integration is added.
-        // This avoids blocking the app if the WalletConnect runtime/integration isn't available yet.
         const manual = typeof window !== 'undefined' ? window.prompt('Paste your Stellar public key (WalletConnect placeholder):') : null;
         if (manual) {
           set({ address: manual, isConnected: true, connector: 'walletconnect' });
@@ -53,19 +55,46 @@ export const useWalletStore = create<WalletState>((set, get) => ({
   },
 
   disconnect: () => {
-    set({ address: null, isConnected: false, connector: null, balances: [] });
+    set({ address: null, isConnected: false, connector: null, balances: [], loading: false, error: null });
   },
 
   refreshBalances: async () => {
     const { address } = get();
     if (!address) return;
 
-    // TODO: replace mock data with actual Horizon queries
-    set({
-      balances: [
-        { assetCode: 'USDC', balance: '14500.00', usdEquivalent: 14500.00 },
-        { assetCode: 'XLM', balance: '250.50', usdEquivalent: 25.05 },
-      ]
-    });
-  }
+    set({ loading: true, error: null });
+
+    try {
+      const response = await fetch(`${HORIZON_URL}/accounts/${address}`);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          set({ balances: [], loading: false });
+          return;
+        }
+        throw new Error(`Horizon error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      const balances: AssetBalance[] = data.balances.map((b: { asset_type: string; balance: string; asset_code?: string; asset_issuer?: string }) => {
+        if (b.asset_type === 'native') {
+          return { assetCode: 'XLM', balance: b.balance };
+        }
+        return {
+          assetCode: b.asset_code!,
+          balance: b.balance,
+          assetIssuer: b.asset_issuer,
+        };
+      });
+
+      set({ balances, loading: false, error: null });
+    } catch (error) {
+      console.error('Failed to refresh balances', error);
+      set({
+        loading: false,
+        error: error instanceof Error ? error.message : 'Failed to fetch balances',
+      });
+    }
+  },
 }));
