@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { Bell, Search, Menu, LogOut, Settings, KeyRound } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { Bell, Search, Menu, LogOut, Settings, KeyRound, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -29,6 +30,8 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
   const { user, logout } = useAuthStore();
   const notify = useNotify();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
   const notificationLabel =
     unreadNotificationCount > 0
       ? `Notifications (${unreadNotificationCount} unread)`
@@ -38,7 +41,16 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
     logout();
     notify.success("Logged out successfully");
     router.push("/auth/login");
-  }, [logout, router]);
+  }, [logout, notify, router]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const isDark = isMounted && theme === "dark";
+  const toggleTheme = useCallback(() => {
+    setTheme(isDark ? "light" : "dark");
+  }, [isDark, setTheme]);
 
   const initials = user?.name
     ? user.name
@@ -52,13 +64,13 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
   return (
     <header
       role="banner"
-      className="h-16 border-b border-slate-100 bg-white flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 shadow-sm shadow-slate-100/50"
+      className="h-16 border-b border-border bg-card flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 shadow-sm shadow-muted/50"
     >
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden text-slate-400 hover:text-slate-700 min-h-[44px] min-w-[44px]"
+          className="md:hidden text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px]"
           onClick={onMenuClick}
           aria-expanded={isMenuOpen}
           aria-controls="mobile-nav"
@@ -67,7 +79,7 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
           <Menu className="h-5 w-5" />
         </Button>
         {title && (
-          <h1 className="text-lg font-semibold tracking-tight hidden md:block text-slate-900">
+          <h1 className="text-lg font-semibold tracking-tight hidden md:block text-foreground">
             {title}
           </h1>
         )}
@@ -82,14 +94,14 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
           onSubmit={(e) => e.preventDefault()}
         >
           <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300"
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
             aria-hidden="true"
           />
           <Input
             type="search"
             aria-label="Search transactions and payment links"
             placeholder="Search..."
-            className="pl-9 bg-slate-50 border-slate-200 focus-visible:ring-amber-400 rounded-xl h-9 text-sm placeholder:text-slate-300"
+            className="pl-9 bg-muted border-border focus-visible:ring-ring rounded-xl h-9 text-sm placeholder:text-muted-foreground"
           />
         </form>
 
@@ -97,11 +109,21 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
         <Button
           variant="ghost"
           size="icon"
-          aria-label="View notifications"
-          className="relative text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl min-h-[44px] min-w-[44px]"
+          aria-label={notificationLabel}
+          className="relative text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl min-h-[44px] min-w-[44px]"
         >
           <Bell className="h-4.5 w-4.5" />
-          <span aria-hidden="true" className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>
+          <span aria-hidden="true" className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 border-2 border-background"></span>
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+          className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl min-h-[44px] min-w-[44px]"
+          onClick={toggleTheme}
+        >
+          {isDark ? <Sun className="h-4.5 w-4.5" /> : <Moon className="h-4.5 w-4.5" />}
         </Button>
 
         {/* User menu */}
@@ -110,16 +132,16 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
             render={
               <Button
                 variant="ghost"
-                className="relative min-h-[44px] min-w-[44px] rounded-xl p-0 hover:bg-slate-100"
+                className="relative min-h-[44px] min-w-[44px] rounded-xl p-0 hover:bg-muted"
                 aria-expanded={isDropdownOpen}
                 aria-label="User menu"
               >
-                <Avatar className="h-8 w-8 border border-slate-200">
+                <Avatar className="h-8 w-8 border border-border">
                   <AvatarImage
                     src="/avatars/01.png"
                     alt={user?.name ?? "User"}
                   />
-                  <AvatarFallback className="bg-amber-500 text-white text-xs font-bold">
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
@@ -127,33 +149,33 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
             }
           />
           <DropdownMenuContent
-            className="w-56 border-slate-200 shadow-lg rounded-xl mt-1"
+            className="w-56 border-border shadow-lg rounded-xl mt-1"
             align="end"
           >
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1 py-1">
-                <p className="text-sm font-semibold text-slate-900 leading-none">
+                <p className="text-sm font-semibold text-foreground leading-none">
                   {user?.name ?? "Merchant User"}
                 </p>
-                <p className="text-xs leading-none text-slate-400 mt-1">
+                <p className="text-xs leading-none text-muted-foreground mt-1">
                   {user?.email ?? "merchant@example.com"}
                 </p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-slate-100" />
+            <DropdownMenuSeparator className="bg-muted" />
             <DropdownMenuItem
-              className="flex items-center gap-2 text-slate-600 cursor-pointer rounded-lg"
+              className="flex items-center gap-2 text-muted-foreground cursor-pointer rounded-lg"
               onClick={() => router.push("/settings")}
             >
               <Settings className="w-4 h-4" /> Profile Settings
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="flex items-center gap-2 text-slate-600 cursor-pointer rounded-lg"
+              className="flex items-center gap-2 text-muted-foreground cursor-pointer rounded-lg"
               onClick={() => router.push("/developers")}
             >
               <KeyRound className="w-4 h-4" /> API Keys
             </DropdownMenuItem>
-            <DropdownMenuSeparator className="bg-slate-100" />
+            <DropdownMenuSeparator className="bg-muted" />
             <DropdownMenuItem
               className="flex items-center gap-2 text-red-500 focus:text-red-500 focus:bg-red-50 cursor-pointer rounded-lg"
               onClick={handleLogout}

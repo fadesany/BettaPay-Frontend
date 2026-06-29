@@ -1,3 +1,5 @@
+/* eslint-disable react/display-name, @typescript-eslint/no-explicit-any */
+
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import DashboardPage from '../page';
@@ -105,22 +107,22 @@ describe('Merchant Dashboard Page Integration Tests', () => {
     const btn30D = screen.getByRole('button', { name: '30D' });
     const btn90D = screen.getByRole('button', { name: '90D' });
 
-    // '7D' should be active by default (containing 'bg-white')
-    expect(btn7D).toHaveClass('bg-white');
-    expect(btn30D).not.toHaveClass('bg-white');
-    expect(btn90D).not.toHaveClass('bg-white');
+    // '7D' should be active by default (containing 'bg-card')
+    expect(btn7D).toHaveClass('bg-card');
+    expect(btn30D).not.toHaveClass('bg-card');
+    expect(btn90D).not.toHaveClass('bg-card');
 
     // Click '30D'
     fireEvent.click(btn30D);
-    expect(btn30D).toHaveClass('bg-white');
-    expect(btn7D).not.toHaveClass('bg-white');
-    expect(btn90D).not.toHaveClass('bg-white');
+    expect(btn30D).toHaveClass('bg-card');
+    expect(btn7D).not.toHaveClass('bg-card');
+    expect(btn90D).not.toHaveClass('bg-card');
 
     // Click '90D'
     fireEvent.click(btn90D);
-    expect(btn90D).toHaveClass('bg-white');
-    expect(btn30D).not.toHaveClass('bg-white');
-    expect(btn7D).not.toHaveClass('bg-white');
+    expect(btn90D).toHaveClass('bg-card');
+    expect(btn30D).not.toHaveClass('bg-card');
+    expect(btn7D).not.toHaveClass('bg-card');
   });
 
   it('has a "View all" link pointing to /transactions', () => {

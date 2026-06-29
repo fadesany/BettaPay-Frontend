@@ -10,7 +10,7 @@ type ToggleProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "role"> & {
 function Toggle({ checked, label, className, ...props }: ToggleProps) {
   return (
     <div className="flex items-center gap-2">
-      <span className="w-6 text-xs font-semibold text-slate-500">
+      <span className="w-6 text-xs font-semibold text-muted-foreground">
         {checked ? "On" : "Off"}
       </span>
       <button
@@ -21,7 +21,7 @@ function Toggle({ checked, label, className, ...props }: ToggleProps) {
         className={cn(
           "relative h-6 w-11 rounded-full transition-colors",
           "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-          checked ? "bg-amber-500" : "bg-slate-300",
+          checked ? "bg-primary" : "bg-muted",
           className
         )}
         {...props}
@@ -29,7 +29,7 @@ function Toggle({ checked, label, className, ...props }: ToggleProps) {
         <span
           aria-hidden="true"
           className={cn(
-            "absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-transform",
+            "absolute top-1 h-4 w-4 rounded-full bg-background shadow-sm transition-transform",
             checked ? "translate-x-6" : "translate-x-1"
           )}
         />

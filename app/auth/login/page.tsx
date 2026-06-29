@@ -128,13 +128,14 @@ export default function LoginPage() {
         role 
       });
       success('Wallet connected & Logged in!');
+      router.push('/dashboard');
     } catch (err) {
       console.error(err);
       error('Failed to complete wallet-login flow');
     } finally {
       setIsWalletLoading(false);
     }
-  }, [login, success, error]);
+  }, [login, router, success, error]);
 
 
   return (
@@ -145,11 +146,11 @@ export default function LoginPage() {
 
       {/* Heading */}
       <div className="mb-10">
-        <p className="text-xs font-semibold tracking-widest text-amber-500 uppercase mb-3">Merchant Portal</p>
-        <h1 className="text-4xl font-bold text-slate-900 leading-tight">Sign in to<br />your account</h1>
-        <p className="text-slate-400 mt-3 text-sm">
+        <p className="text-xs font-semibold tracking-widest text-primary uppercase mb-3">Merchant Portal</p>
+        <h1 className="text-4xl font-bold text-foreground leading-tight">Sign in to<br />your account</h1>
+        <p className="text-muted-foreground mt-3 text-sm">
           Don&apos;t have an account?{' '}
-          <Link href="/auth/register" className="text-amber-600 font-semibold hover:text-amber-700 transition-colors">
+          <Link href="/auth/register" className="text-primary font-semibold hover:text-primary transition-colors">
             Create one free
           </Link>
         </p>
@@ -159,7 +160,7 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Email */}
         <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <Label htmlFor="email" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Email Address
           </Label>
           <Input
@@ -169,7 +170,7 @@ export default function LoginPage() {
             {...register('email')}
             aria-invalid={errors.email ? "true" : "false"}
             aria-describedby={errors.email ? "email-error" : undefined}
-            className="h-12 bg-white border border-slate-200 text-slate-900 placeholder:text-slate-300 rounded-xl text-sm focus-visible:ring-1 focus-visible:ring-amber-400 focus-visible:border-amber-400 transition-all"
+            className="h-12 bg-card border border-border text-foreground placeholder:text-muted-foreground rounded-xl text-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:border-ring transition-all"
           />
           {errors.email && <p id="email-error" className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
         </div>
@@ -177,10 +178,10 @@ export default function LoginPage() {
         {/* Password */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <Label htmlFor="password" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               Password
             </Label>
-            <Link href="/auth/forgot-password" className="text-xs text-slate-400 hover:text-amber-600 transition-colors">
+            <Link href="/auth/forgot-password" className="text-xs text-muted-foreground hover:text-primary transition-colors">
               Forgot password?
             </Link>
           </div>
@@ -191,7 +192,7 @@ export default function LoginPage() {
             {...register('password')}
             aria-invalid={errors.password ? "true" : "false"}
             aria-describedby={errors.password ? "password-error" : undefined}
-            className="h-12 bg-white border border-slate-200 text-slate-900 placeholder:text-slate-300 rounded-xl text-sm focus-visible:ring-1 focus-visible:ring-amber-400 focus-visible:border-amber-400 transition-all"
+            className="h-12 bg-card border border-border text-foreground placeholder:text-muted-foreground rounded-xl text-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:border-ring transition-all"
           />
           {errors.password && <p id="password-error" className="text-xs text-red-500 mt-1">{errors.password.message}</p>}
         </div>
@@ -201,7 +202,7 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={isLoading || isWalletLoading || isRateLimited}
-            className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm rounded-xl border-0 transition-colors scroll-mb-52"
+            className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-semibold text-sm rounded-xl border-0 transition-colors scroll-mb-52"
           >
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {isRateLimited ? `Try again in ${secondsRemaining}s` : 'Sign In'}
@@ -211,9 +212,9 @@ export default function LoginPage() {
 
       {/* Divider */}
       <div className="flex items-center gap-4 my-6">
-        <div className="flex-1 h-px bg-slate-100" />
-        <span className="text-xs text-slate-400 font-medium">or</span>
-        <div className="flex-1 h-px bg-slate-100" />
+        <div className="flex-1 h-px bg-muted" />
+        <span className="text-xs text-muted-foreground font-medium">or</span>
+        <div className="flex-1 h-px bg-muted" />
       </div>
 
       {/* Wallet button */}
@@ -221,7 +222,7 @@ export default function LoginPage() {
         type="button"
         onClick={() => setWalletModalOpen(true)}
         disabled={isLoading || isWalletLoading || isRateLimited}
-        className="w-full h-12 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-medium text-sm rounded-xl transition-colors"
+        className="w-full h-12 bg-card border border-border text-foreground hover:bg-muted font-medium text-sm rounded-xl transition-colors"
       >
         {isWalletLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         Connect Freighter Wallet
@@ -229,4 +230,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

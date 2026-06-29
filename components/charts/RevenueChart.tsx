@@ -31,9 +31,9 @@ interface ChartTooltipProps {
 const ChartTooltip = ({ active, payload, label }: ChartTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-lg text-sm">
-        <p className="font-semibold text-slate-700 mb-1">{label}</p>
-        <p className="text-amber-600 font-bold">
+      <div className="bg-card border border-border rounded-xl p-3 shadow-lg text-sm">
+        <p className="font-semibold text-foreground mb-1">{label}</p>
+        <p className="text-primary font-bold">
           ${payload[0]?.value?.toLocaleString()}
         </p>
       </div>
@@ -66,44 +66,44 @@ export default function RevenueChart({ height = 260 }: RevenueChartProps) {
         >
           <defs>
             <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#F0A500" stopOpacity={0.25} />
-              <stop offset="95%" stopColor="#F0A500" stopOpacity={0} />
+              <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.25} />
+              <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke="#F1F5F9"
+            stroke="var(--border)"
             vertical={false}
           />
           <XAxis
             dataKey="name"
-            stroke="#CBD5E1"
+            stroke="var(--muted-foreground)"
             fontSize={11}
             tickLine={false}
             axisLine={false}
-            tick={{ fill: "#94A3B8" }}
+            tick={{ fill: "var(--muted-foreground)" }}
           />
           <YAxis
-            stroke="#CBD5E1"
+            stroke="var(--muted-foreground)"
             fontSize={11}
             tickLine={false}
             axisLine={false}
             tickFormatter={(v) => `$${v}`}
-            tick={{ fill: "#94A3B8" }}
+            tick={{ fill: "var(--muted-foreground)" }}
           />
           <Tooltip content={<ChartTooltip />} />
           <Area
             type="monotone"
             dataKey="total"
-            stroke="#F0A500"
+            stroke="var(--primary)"
             strokeWidth={2.5}
             fillOpacity={1}
             fill="url(#colorRevenue)"
             dot={false}
             activeDot={{
               r: 5,
-              fill: "#F0A500",
-              stroke: "#fff",
+              fill: "var(--primary)",
+              stroke: "var(--card)",
               strokeWidth: 2,
             }}
           />

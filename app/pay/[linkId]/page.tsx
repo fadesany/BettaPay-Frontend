@@ -35,7 +35,7 @@ const WalletModal = dynamic(
 export default function PaymentLinkPage() {
   const router = useRouter();
   const { isConnected, connect, address } = useWalletStore();
-  const { success, error } = useNotify();
+  const { error: notifyError } = useNotify();
   const [walletModalOpen, setWalletModalOpen] = useState(false);
 
   // Mock data for this link
@@ -55,7 +55,7 @@ export default function PaymentLinkPage() {
 
   const handleContinue = () => {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      error("Please enter a valid amount");
+      notifyError("Please enter a valid amount");
       return;
     }
     setStep("review");
@@ -127,11 +127,11 @@ export default function PaymentLinkPage() {
 
       // Redirect to status page with the backend payment ID
       router.push(`/pay/status/${response.data.id}`);
-    } catch (error: unknown) {
-      console.error(error);
+    } catch (paymentError: unknown) {
+      console.error(paymentError);
       const errorMessage =
-        error instanceof Error ? error.message : "Payment failed";
-      error(errorMessage);
+        paymentError instanceof Error ? paymentError.message : "Payment failed";
+      notifyError(errorMessage);
     } finally {
       setIsProcessing(false);
     }

@@ -9,8 +9,14 @@
 }
 
 @layer base {
+  /*
+   * Theme tokens follow the shadcn-style semantic naming convention.
+   * Use these role-based variables (background, foreground, card, border,
+   * muted, primary, etc.) in Tailwind classes instead of brand-specific
+   * aliases or hardcoded surface/text colors. The .dark block below must
+   * define the same token set so components adapt by theme.
+   */
   :root {
-    /* Clean white-background light theme */
     --background: #FFFFFF;
     --foreground: #0F172A;
     --card: #FFFFFF;
@@ -31,8 +37,12 @@
     --input: #F8FAFC;
     --ring: #F0A500;
     --radius: 0.75rem;
+    --chart-1: #F0A500;
+    --chart-2: #2563EB;
+    --chart-3: #16A34A;
+    --chart-4: #8B5CF6;
+    --chart-5: #EF4444;
 
-    /* Sidebar */
     --sidebar: #FFFFFF;
     --sidebar-foreground: #0F172A;
     --sidebar-primary: #F0A500;
@@ -41,20 +51,42 @@
     --sidebar-accent-foreground: #0F172A;
     --sidebar-border: #E2E8F0;
     --sidebar-ring: #F0A500;
+  }
 
-    /* Brand tokens */
-    --brand-primary: #F0A500;
-    --brand-surface: #FFFFFF;
-    --brand-surface-alt: #F8FAFC;
-    --brand-accent: #2563EB;
-    --brand-accent-hover: #1D4ED8;
-    --brand-success: #16A34A;
-    --brand-warning: #F59E0B;
-    --brand-error: #EF4444;
-    --brand-text-primary: #0F172A;
-    --brand-text-secondary: #334155;
-    --brand-text-muted: #64748B;
-    --brand-border: #E2E8F0;
+  .dark {
+    --background: #0F172A;
+    --foreground: #F8FAFC;
+    --card: #1E293B;
+    --card-foreground: #F8FAFC;
+    --popover: #1E293B;
+    --popover-foreground: #F8FAFC;
+    --primary: #FBBF24;
+    --primary-foreground: #0F172A;
+    --secondary: #334155;
+    --secondary-foreground: #F8FAFC;
+    --muted: #334155;
+    --muted-foreground: #CBD5E1;
+    --accent: #334155;
+    --accent-foreground: #F8FAFC;
+    --destructive: #F87171;
+    --destructive-foreground: #0F172A;
+    --border: #334155;
+    --input: #1E293B;
+    --ring: #FBBF24;
+    --chart-1: #FBBF24;
+    --chart-2: #60A5FA;
+    --chart-3: #34D399;
+    --chart-4: #A78BFA;
+    --chart-5: #F87171;
+
+    --sidebar: #0F172A;
+    --sidebar-foreground: #F8FAFC;
+    --sidebar-primary: #FBBF24;
+    --sidebar-primary-foreground: #0F172A;
+    --sidebar-accent: #1E293B;
+    --sidebar-accent-foreground: #F8FAFC;
+    --sidebar-border: #334155;
+    --sidebar-ring: #FBBF24;
   }
 
   html {

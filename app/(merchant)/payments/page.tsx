@@ -36,10 +36,10 @@ interface PaymentLinkCardProps {
 
 const PaymentLinkCard = memo(function PaymentLinkCard({ link }: PaymentLinkCardProps) {
   return (
-    <Card className="bg-brand-surface border-border/50 shadow-sm hover:border-brand-accent/50 transition-colors group">
+    <Card className="bg-card border-border/50 shadow-sm hover:border-primary/50 transition-colors group">
       <CardHeader className="flex flex-row items-start justify-between pb-2">
         <div>
-          <CardTitle className="text-base font-medium text-brand-text-primary line-clamp-1">{link.label}</CardTitle>
+          <CardTitle className="text-base font-medium text-foreground line-clamp-1">{link.label}</CardTitle>
           <CardDescription className="mt-1">
             {link.type === 'fixed' ? `${link.amount} ${link.currency}` : 'Open amount'}
             <span className="hidden sm:inline"> · Created {link.created}</span>
@@ -58,7 +58,7 @@ const PaymentLinkCard = memo(function PaymentLinkCard({ link }: PaymentLinkCardP
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <CopyAddress address={link.url} showIconOnly truncate={false} />
-            <Button variant="outline" size="icon" aria-label="Show QR code" className="h-8 w-8 border-border/50 bg-background/50 text-muted-foreground hover:text-brand-text-primary">
+            <Button variant="outline" size="icon" aria-label="Show QR code" className="h-8 w-8 border-border/50 bg-background/50 text-muted-foreground hover:text-foreground">
               <QrCode className="h-4 w-4" />
             </Button>
           </div>
@@ -86,7 +86,7 @@ export default function PaymentsPage() {
     setLabelValue('');
   };
 
-  const mockLinks = [
+  const mockLinks: PaymentLink[] = [
     { id: 'link_01', label: 'Consulting Retainer Q3', type: 'open', amount: null, currency: 'USDC', url: 'https://betta.pay/pay/link_01', created: '2023-10-25' },
     { id: 'link_02', label: 'E-commerce Checkout', type: 'fixed', amount: 45.50, currency: 'USDC', url: 'https://betta.pay/pay/link_02', created: '2023-10-24' },
     { id: 'link_03', label: 'Donation Campaign', type: 'open', amount: null, currency: 'USDC', url: 'https://betta.pay/pay/link_03', created: '2023-10-20' },
@@ -109,7 +109,7 @@ export default function PaymentsPage() {
               New Payment Link
             </Button>
           } />
-          <DialogContent className="sm:max-w-[425px] bg-brand-surface border-border/50 max-h-[85dvh] overflow-y-auto">
+          <DialogContent className="sm:max-w-[425px] bg-card border-border/50 max-h-[85dvh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Create Payment Link</DialogTitle>
               <DialogDescription>
@@ -123,7 +123,7 @@ export default function PaymentsPage() {
                   id="label"
                   placeholder="e.g. Consulting Retainer"
                   autoFocus
-                  className="bg-background/50 border-border/50 focus-visible:ring-brand-accent"
+                  className="bg-background/50 border-border/50 focus-visible:ring-ring"
                   value={labelValue}
                   onChange={(e) => setLabelValue(e.target.value)}
                   aria-invalid={labelError ? "true" : "false"}
@@ -135,7 +135,7 @@ export default function PaymentsPage() {
               <div className="space-y-2">
                 <Label>Payment Type</Label>
                 <Select defaultValue="open">
-                  <SelectTrigger className="bg-background/50 border-border/50 focus:ring-brand-accent">
+                  <SelectTrigger className="bg-background/50 border-border/50 focus:ring-ring">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -148,7 +148,7 @@ export default function PaymentsPage() {
               <div className="space-y-2">
                 <Label>Accepted Currencies</Label>
                 <div className="flex gap-2">
-                  <Button type="button" variant="outline" className="flex-1 bg-brand-accent/10 border-brand-accent/50 text-brand-accent hover:bg-brand-accent/20">
+                  <Button type="button" variant="outline" className="flex-1 bg-primary/10 border-primary/50 text-primary hover:bg-primary/20">
                     USDC
                   </Button>
                   <Button type="button" variant="outline" className="flex-1 bg-background/50 border-border/50 text-muted-foreground hover:bg-muted">

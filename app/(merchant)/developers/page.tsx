@@ -46,7 +46,9 @@ const EVENT_TYPES = [
   { value: 'payment.failed', label: 'payment.failed' },
 ];
 
-const SAMPLE_PAYLOADS: Record<string, any> = {
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
+const SAMPLE_PAYLOADS: Record<string, JsonValue> = {
   'payment.received': {
     "id": "evt_123456",
     "type": "payment.received",
@@ -95,7 +97,7 @@ export default function DevelopersPage() {
   const isOnline = useOfflineStore((s) => s.isOnline);
   const notify = useNotify();
 
-  const handleCopy = (text: string, label: string) => {
+  const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
     notify.success('Copied to clipboard');
   };
@@ -118,9 +120,9 @@ export default function DevelopersPage() {
   return (
     <div className="space-y-8 pb-8">
       <div>
-        <p className="text-xs font-semibold tracking-widest text-amber-500 uppercase mb-1">Integration</p>
-        <h1 className="text-3xl font-bold text-slate-900">Developers</h1>
-        <p className="text-slate-400 text-sm mt-1">
+        <p className="text-xs font-semibold tracking-widest text-primary uppercase mb-1">Integration</p>
+        <h1 className="text-3xl font-bold text-foreground">Developers</h1>
+        <p className="text-muted-foreground text-sm mt-1">
           API keys, webhooks, and SDK quickstart for integrating BettaPay.
         </p>
       </div>
@@ -133,32 +135,32 @@ export default function DevelopersPage() {
           { icon: Code2, label: 'SDKs', desc: 'Node.js, Python, PHP', color: 'emerald' },
         ].map(({ icon: Icon, label, desc, color }) => (
           <div key={label} className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer hover:shadow-sm transition-all
-            ${color === 'amber' ? 'border-amber-200 bg-amber-50 hover:bg-amber-100' : ''}
+            ${color === 'amber' ? 'border-primary/30 bg-primary/10 hover:bg-primary/20' : ''}
             ${color === 'blue' ? 'border-blue-200 bg-blue-50 hover:bg-blue-100' : ''}
             ${color === 'emerald' ? 'border-emerald-200 bg-emerald-50 hover:bg-emerald-100' : ''}
           `}>
-            <Icon className={`w-5 h-5 ${color === 'amber' ? 'text-amber-600' : ''} ${color === 'blue' ? 'text-blue-600' : ''} ${color === 'emerald' ? 'text-emerald-600' : ''}`} />
+            <Icon className={`w-5 h-5 ${color === 'amber' ? 'text-primary' : ''} ${color === 'blue' ? 'text-blue-600' : ''} ${color === 'emerald' ? 'text-emerald-600' : ''}`} />
             <div>
-              <p className="text-sm font-semibold text-slate-800">{label}</p>
-              <p className="text-xs text-slate-500">{desc}</p>
+              <p className="text-sm font-semibold text-foreground">{label}</p>
+              <p className="text-xs text-muted-foreground">{desc}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* API Keys */}
-      <Card className="border border-slate-200 bg-white shadow-sm">
+      <Card className="border border-border bg-card shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-base font-semibold text-slate-900 flex items-center gap-2">
-              <Key className="w-4 h-4 text-amber-500" /> API Keys
+            <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
+              <Key className="w-4 h-4 text-primary" /> API Keys
             </CardTitle>
           </div>
           <NetworkTooltip show={!isOnline}>
             <Button
               disabled={!isOnline}
               aria-disabled={!isOnline}
-              className="bg-amber-500 hover:bg-amber-600 text-white rounded-xl h-9 px-4 text-xs font-semibold"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl h-9 px-4 text-xs font-semibold"
             >
               <Plus className="w-3.5 h-3.5 mr-1.5" /> New Key
             </Button>
@@ -167,30 +169,30 @@ export default function DevelopersPage() {
         <CardContent>
           <div className="space-y-3">
             {mockKeys.map((key) => (
-              <div key={key.id} className="flex items-center gap-4 p-4 rounded-xl border border-slate-100 hover:border-slate-200 hover:bg-slate-50/50 transition-all">
+              <div key={key.id} className="flex items-center gap-4 p-4 rounded-xl border border-border hover:border-border hover:bg-muted/50 transition-all">
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-bold
-                  ${key.type === 'live' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
+                  ${key.type === 'live' ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-muted-foreground'}`}>
                   {key.type === 'live' ? 'LV' : 'TS'}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">{key.name}</p>
-                  <p className="text-xs text-slate-400 font-mono">
+                  <p className="text-sm font-semibold text-foreground">{key.name}</p>
+                  <p className="text-xs text-muted-foreground font-mono">
                     {key.prefix}{showKey === key.id ? '••••••••••••••••' : '••••••••••••••••'}{key.suffix}
                   </p>
                 </div>
                 <div className="text-right hidden sm:block">
-                  <p className="text-xs text-slate-400">Last used</p>
-                  <p className="text-xs font-medium text-slate-700">{key.lastUsed}</p>
+                  <p className="text-xs text-muted-foreground">Last used</p>
+                  <p className="text-xs font-medium text-foreground">{key.lastUsed}</p>
                 </div>
                 <div className="flex gap-1">
                   <Button variant="ghost" size="icon" aria-label="Toggle visibility" className="h-8 w-8 rounded-lg" onClick={() => setShowKey(showKey === key.id ? null : key.id)}>
-                    {showKey === key.id ? <EyeOff className="w-3.5 h-3.5 text-slate-400" /> : <Eye className="w-3.5 h-3.5 text-slate-400" />}
+                    {showKey === key.id ? <EyeOff className="w-3.5 h-3.5 text-muted-foreground" /> : <Eye className="w-3.5 h-3.5 text-muted-foreground" />}
                   </Button>
-                  <Button variant="ghost" size="icon" aria-label="Copy API key" className="h-8 w-8 rounded-lg" onClick={() => handleCopy(`${key.prefix}EXAMPLE${key.suffix}`, 'API key')}>
-                    <Copy className="w-3.5 h-3.5 text-slate-400" />
+                  <Button variant="ghost" size="icon" aria-label="Copy API key" className="h-8 w-8 rounded-lg" onClick={() => handleCopy(`${key.prefix}EXAMPLE${key.suffix}`)}>
+                    <Copy className="w-3.5 h-3.5 text-muted-foreground" />
                   </Button>
                   <Button variant="ghost" size="icon" aria-label="Rotate API key" className="h-8 w-8 rounded-lg" onClick={() => notify.info('Key rotation coming soon')}>
-                    <RefreshCcw className="w-3.5 h-3.5 text-slate-400" />
+                    <RefreshCcw className="w-3.5 h-3.5 text-muted-foreground" />
                   </Button>
                 </div>
               </div>
@@ -200,18 +202,18 @@ export default function DevelopersPage() {
       </Card>
 
       {/* Quickstart code */}
-      <Card className="border border-slate-200 bg-white shadow-sm">
+      <Card className="border border-border bg-card shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base font-semibold text-slate-900 flex items-center gap-2">
-            <Code2 className="w-4 h-4 text-amber-500" /> Quickstart
+          <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
+            <Code2 className="w-4 h-4 text-primary" /> Quickstart
           </CardTitle>
-          <Button variant="outline" className="border-slate-200 rounded-xl h-8 px-3 text-xs" onClick={() => handleCopy(codeExample, 'Code')}>
+          <Button variant="outline" className="border-border rounded-xl h-8 px-3 text-xs" onClick={() => handleCopy(codeExample)}>
             <Copy className="w-3 h-3 mr-1.5" /> Copy
           </Button>
         </CardHeader>
         <CardContent>
-          <div className="bg-slate-950 rounded-xl p-5 overflow-x-auto">
-            <pre className="text-sm text-slate-300 font-mono leading-relaxed whitespace-pre-wrap break-words">
+          <div className="bg-foreground rounded-xl p-5 overflow-x-auto">
+            <pre className="text-sm text-muted-foreground font-mono leading-relaxed whitespace-pre-wrap break-words">
               {codeExample}
             </pre>
           </div>
@@ -219,22 +221,22 @@ export default function DevelopersPage() {
       </Card>
 
       {/* Webhook URL config */}
-      <Card className="border border-slate-200 bg-white shadow-sm">
+      <Card className="border border-border bg-card shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold text-slate-900 flex items-center gap-2">
-            <Globe className="w-4 h-4 text-amber-500" /> Webhook Endpoint
+          <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
+            <Globe className="w-4 h-4 text-primary" /> Webhook Endpoint
           </CardTitle>
         </CardHeader>
         <CardContent className="flex items-center gap-3">
           <Input
             defaultValue="https://your-app.com/webhooks/bettapay"
-            className="flex-1 h-10 border-slate-200 rounded-xl text-sm font-mono bg-slate-50"
+            className="flex-1 h-10 border-border rounded-xl text-sm font-mono bg-muted"
           />
           <NetworkTooltip show={!isOnline}>
             <Button
               disabled={!isOnline}
               aria-disabled={!isOnline}
-              className="bg-amber-500 hover:bg-amber-600 text-white rounded-xl h-10 px-4 text-sm font-semibold shrink-0"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl h-10 px-4 text-sm font-semibold shrink-0"
             >
               Save
             </Button>
@@ -243,21 +245,21 @@ export default function DevelopersPage() {
       </Card>
 
       {/* Test Webhook Section */}
-      <Card className="border border-slate-200 bg-white shadow-sm">
+      <Card className="border border-border bg-card shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold text-slate-900 flex items-center gap-2">
-            <Zap className="w-4 h-4 text-amber-500" /> Test Webhook
+          <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
+            <Zap className="w-4 h-4 text-primary" /> Test Webhook
           </CardTitle>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Simulate webhook events to test your endpoint integration.
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-4 items-end">
             <div className="flex-1 space-y-2">
-              <label className="text-xs font-semibold text-slate-700">Event Type</label>
-              <Select value={selectedEvent} onValueChange={setSelectedEvent}>
-                <SelectTrigger className="w-full h-10 border-slate-200 rounded-xl bg-slate-50">
+              <label className="text-xs font-semibold text-foreground">Event Type</label>
+              <Select value={selectedEvent} onValueChange={(value) => value && setSelectedEvent(value)}>
+                <SelectTrigger className="w-full h-10 border-border rounded-xl bg-muted">
                   <SelectValue placeholder="Select event type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -272,7 +274,7 @@ export default function DevelopersPage() {
             <Button 
               onClick={handleSendTest} 
               disabled={isSimulating}
-              className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl h-10 px-6 text-sm font-semibold min-w-[140px]"
+              className="bg-foreground hover:bg-foreground/90 text-background rounded-xl h-10 px-6 text-sm font-semibold min-w-[140px]"
             >
               {isSimulating ? (
                 <>
@@ -287,17 +289,17 @@ export default function DevelopersPage() {
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-700">Simulated Payload</label>
+              <label className="text-xs font-semibold text-foreground">Simulated Payload</label>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="h-7 text-[10px] text-slate-500 hover:text-slate-900"
-                onClick={() => handleCopy(JSON.stringify(SAMPLE_PAYLOADS[selectedEvent], null, 2), 'Payload')}
+                className="h-7 text-[10px] text-muted-foreground hover:text-foreground"
+                onClick={() => handleCopy(JSON.stringify(SAMPLE_PAYLOADS[selectedEvent], null, 2))}
               >
                 <Copy className="w-3 h-3 mr-1" /> Copy JSON
               </Button>
             </div>
-            <div className="bg-slate-950 rounded-xl p-4 overflow-x-auto border border-slate-800">
+            <div className="bg-foreground rounded-xl p-4 overflow-x-auto border border-border">
               <pre className="text-xs text-emerald-400 font-mono leading-relaxed">
                 {JSON.stringify(SAMPLE_PAYLOADS[selectedEvent], null, 2)}
               </pre>

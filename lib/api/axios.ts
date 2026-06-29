@@ -1,10 +1,14 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '../store/authStore';
 import { useRateLimitStore } from '../store/rateLimitStore';
-import { useNotify } from '@/lib/hooks/useNotify';
 import { getCsrfTokenFromCookie, CSRF_HEADER_NAME } from '../utils/csrf';
+import { toast } from 'sonner';
+import { announce } from '@/lib/utils/announce';
 
-const notify = useNotify();
+function notifyError(message: string) {
+  toast.error(message, { duration: 5000 });
+  announce(message);
+}
 
 // Use cookie-based auth (HttpOnly cookie set by the server). Do not read tokens from localStorage.
 export const apiClient = axios.create({
@@ -99,12 +103,12 @@ apiClient.interceptors.response.use(
       const retryAfter = error.response.headers['retry-after'];
       const seconds = parseInt(retryAfter, 10) || 30;
       useRateLimitStore.getState().setRateLimited(seconds);
-    notify.error(`Too many attempts. Please try again in ${seconds} seconds.`);
+      notifyError(`Too many attempts. Please try again in ${seconds} seconds.`);
     }
 
     // Show toast for network errors
     if (!error.response) {
-      notify.error('Network error. Please check your connection.');
+      notifyError('Network error. Please check your connection.');
     }
 
     return Promise.reject(error);

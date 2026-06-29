@@ -6,23 +6,23 @@ export default function Footer() {
   return (
     <footer
       role="contentinfo"
-      className="w-full border-t mt-16 py-10 bg-brand-surface/60"
+      className="w-full border-t mt-16 py-10 bg-card/60"
     >
       <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-brand-accent/10 flex items-center justify-center">
-            <ShieldCheck className="w-5 h-5 text-brand-accent" />
+          <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+            <ShieldCheck className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <div className="font-semibold text-brand-text-primary">
+            <div className="font-semibold text-foreground">
               BettaPay
             </div>
-            <div className="text-sm text-brand-text-muted">
+            <div className="text-sm text-muted-foreground">
               © 2026 BettaPay Inc.
             </div>
           </div>
         </div>
-        <div className="text-sm text-brand-text-muted">
+        <div className="text-sm text-muted-foreground">
           Built on Stellar • Non-custodial payments
         </div>
       </div>

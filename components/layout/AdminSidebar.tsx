@@ -74,6 +74,6 @@ export const AdminSidebar = () => {
           </div>
         </div>
       </div>
-    </div>
+    </aside>
   );
 };

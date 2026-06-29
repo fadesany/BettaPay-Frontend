@@ -42,7 +42,7 @@ export default function SettingsPage() {
     logout();
     notify.success('Logged out successfully');
     router.push('/auth/login');
-  }, [logout, router]);
+  }, [logout, notify, router]);
 
   const handleTabChange = useCallback((id: string) => {
     setActiveTab(id);
@@ -58,11 +58,11 @@ export default function SettingsPage() {
   return (
     <div className="space-y-8 pb-8">
       <div>
-        <p className="text-xs font-semibold tracking-widest text-amber-500 uppercase mb-1">Account</p>
-        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
+        <p className="text-xs font-semibold tracking-widest text-primary uppercase mb-1">Account</p>
+        <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
           <Settings className="w-7 h-7" /> Settings
         </h1>
-        <p className="text-slate-400 text-sm mt-1">Manage your account, business profile, and preferences.</p>
+        <p className="text-muted-foreground text-sm mt-1">Manage your account, business profile, and preferences.</p>
       </div>
 
       <div className="flex gap-6 flex-col lg:flex-row">
@@ -76,8 +76,8 @@ export default function SettingsPage() {
                 className={cn(
                   'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-left',
                   activeTab === id
-                    ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
+                    ? 'bg-primary/10 text-primary border border-primary/30'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 )}
               >
                 <Icon className="w-4 h-4" /> {label}
@@ -97,36 +97,41 @@ export default function SettingsPage() {
         {/* Tab content */}
         <div className="flex-1 min-w-0 overflow-y-auto">
           {activeTab === 'profile' && (
-            <Card className="border border-slate-200 bg-white shadow-sm">
+            <Card className="border border-border bg-card shadow-sm">
               <CardHeader>
-                <CardTitle className="text-base font-semibold text-slate-900">Profile Details</CardTitle>
+                <CardTitle className="text-base font-semibold text-foreground">Profile Details</CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
-                <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl">
-                  <div className="w-14 h-14 rounded-full bg-amber-500 flex items-center justify-center text-white text-xl font-bold">
+                <div className="flex items-center gap-4 p-4 bg-muted rounded-xl">
+                  <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xl font-bold">
                     {user?.name?.charAt(0) ?? 'M'}
                   </div>
                   <div>
-                    <p className="font-semibold text-slate-900">{user?.name ?? 'Merchant User'}</p>
-                    <p className="text-sm text-slate-400">{user?.email ?? 'merchant@example.com'}</p>
-                    <span className="inline-block mt-1 text-xs bg-amber-100 text-amber-700 font-semibold px-2 py-0.5 rounded-full capitalize">{user?.role ?? 'merchant'}</span>
+                    <p className="font-semibold text-foreground">{user?.name ?? 'Merchant User'}</p>
+                    <p className="text-sm text-muted-foreground">{user?.email ?? 'merchant@example.com'}</p>
+                    <span className="inline-block mt-1 text-xs bg-primary/20 text-primary font-semibold px-2 py-0.5 rounded-full capitalize">{user?.role ?? 'merchant'}</span>
                   </div>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Full Name</Label>
-                    <Input defaultValue={user?.name ?? ''} className="h-10 border-slate-200 rounded-xl bg-white text-sm" />
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Full Name</Label>
+                    <Input defaultValue={user?.name ?? ''} className="h-10 border-border rounded-xl bg-card text-sm" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Email Address</Label>
-                    <Input defaultValue={user?.email ?? ''} type="email" className="h-10 border-slate-200 rounded-xl bg-white text-sm" />
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Email Address</Label>
+                    <Input defaultValue={user?.email ?? ''} type="email" className="h-10 border-border rounded-xl bg-card text-sm" />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Phone Number</Label>
-                  <Input placeholder="+234 800 000 0000" className="h-10 border-slate-200 rounded-xl bg-white text-sm" />
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Phone Number</Label>
+                  <Input placeholder="+234 800 000 0000" className="h-10 border-border rounded-xl bg-card text-sm" />
                 </div>
-                <Button className="bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl h-10 px-6 text-sm scroll-mb-52" onClick={() => notify.success('Profile updated');}>
+                <Button
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl h-10 px-6 text-sm scroll-mb-52"
+                  onClick={() => {
+                    notify.success('Profile updated');
+                  }}
+                >
                   Save Changes
                 </Button>
               </CardContent>
@@ -134,30 +139,35 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'business' && (
-            <Card className="border border-slate-200 bg-white shadow-sm">
+            <Card className="border border-border bg-card shadow-sm">
               <CardHeader>
-                <CardTitle className="text-base font-semibold text-slate-900">Business Information</CardTitle>
+                <CardTitle className="text-base font-semibold text-foreground">Business Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Business Name</Label>
-                    <Input defaultValue="Merchant Corp" className="h-10 border-slate-200 rounded-xl bg-white text-sm" />
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Business Name</Label>
+                    <Input defaultValue="Merchant Corp" className="h-10 border-border rounded-xl bg-card text-sm" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Registration Number</Label>
-                    <Input placeholder="RC-1234567" className="h-10 border-slate-200 rounded-xl bg-white text-sm" />
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Registration Number</Label>
+                    <Input placeholder="RC-1234567" className="h-10 border-border rounded-xl bg-card text-sm" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Bank Name</Label>
-                    <Input placeholder="e.g. GTBank" className="h-10 border-slate-200 rounded-xl bg-white text-sm" />
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Bank Name</Label>
+                    <Input placeholder="e.g. GTBank" className="h-10 border-border rounded-xl bg-card text-sm" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Account Number</Label>
-                    <Input placeholder="0123456789" className="h-10 border-slate-200 rounded-xl bg-white text-sm" />
+                    <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Account Number</Label>
+                    <Input placeholder="0123456789" className="h-10 border-border rounded-xl bg-card text-sm" />
                   </div>
                 </div>
-                <Button className="bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl h-10 px-6 text-sm scroll-mb-52" onClick={() => notify.success('Business info saved');}>
+                <Button
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl h-10 px-6 text-sm scroll-mb-52"
+                  onClick={() => {
+                    notify.success('Business info saved');
+                  }}
+                >
                   Save Changes
                 </Button>
               </CardContent>
@@ -165,16 +175,16 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'notifications' && (
-            <Card className="border border-slate-200 bg-white shadow-sm">
+            <Card className="border border-border bg-card shadow-sm">
               <CardHeader>
-                <CardTitle className="text-base font-semibold text-slate-900">Notification Preferences</CardTitle>
+                <CardTitle className="text-base font-semibold text-foreground">Notification Preferences</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {notificationOptions.map(({ id, label, desc }) => (
-                  <div key={id} className="flex items-center justify-between gap-4 p-4 rounded-xl border border-slate-100 hover:bg-slate-50/50 transition-colors">
+                  <div key={id} className="flex items-center justify-between gap-4 p-4 rounded-xl border border-border hover:bg-muted/50 transition-colors">
                     <div>
-                      <p className="text-sm font-semibold text-slate-800">{label}</p>
-                      <p className="text-xs text-slate-400">{desc}</p>
+                      <p className="text-sm font-semibold text-foreground">{label}</p>
+                      <p className="text-xs text-muted-foreground">{desc}</p>
                     </div>
                     <Toggle
                       checked={notificationPreferences[id]}
@@ -188,24 +198,29 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'security' && (
-            <Card className="border border-slate-200 bg-white shadow-sm">
+            <Card className="border border-border bg-card shadow-sm">
               <CardHeader>
-                <CardTitle className="text-base font-semibold text-slate-900">Security</CardTitle>
+                <CardTitle className="text-base font-semibold text-foreground">Security</CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Current Password</Label>
-                  <Input type="password" placeholder="••••••••" className="h-10 border-slate-200 rounded-xl bg-white text-sm" />
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Current Password</Label>
+                  <Input type="password" placeholder="••••••••" className="h-10 border-border rounded-xl bg-card text-sm" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">New Password</Label>
-                  <Input type="password" placeholder="••••••••" className="h-10 border-slate-200 rounded-xl bg-white text-sm" />
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">New Password</Label>
+                  <Input type="password" placeholder="••••••••" className="h-10 border-border rounded-xl bg-card text-sm" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Confirm New Password</Label>
-                  <Input type="password" placeholder="••••••••" className="h-10 border-slate-200 rounded-xl bg-white text-sm" />
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Confirm New Password</Label>
+                  <Input type="password" placeholder="••••••••" className="h-10 border-border rounded-xl bg-card text-sm" />
                 </div>
-                <Button className="bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl h-10 px-6 text-sm scroll-mb-52" onClick={() => notify.success('Password updated');}>
+                <Button
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl h-10 px-6 text-sm scroll-mb-52"
+                  onClick={() => {
+                    notify.success('Password updated');
+                  }}
+                >
                   Update Password
                 </Button>
               </CardContent>

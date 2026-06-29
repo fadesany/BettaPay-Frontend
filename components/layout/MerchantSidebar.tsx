@@ -15,7 +15,7 @@ import {
   Building2,
 } from "lucide-react";
 
-const navItems = [
+export const merchantNavItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/payments", label: "Payments", icon: LinkIcon },
   { href: "/transactions", label: "Transactions", icon: ListOrdered },
@@ -31,24 +31,24 @@ export const MerchantSidebar = () => {
 
   return (
     <aside
-      className="flex h-full w-64 flex-col bg-white border-r border-slate-100 hidden md:flex"
+      className="flex h-full w-64 flex-col bg-card border-r border-border hidden md:flex"
       role="navigation"
       aria-label="Main navigation"
     >
       {/* Logo */}
-      <div className="p-5 border-b border-slate-100">
+      <div className="p-5 border-b border-border">
         <Link href="/dashboard" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-amber-500 flex items-center justify-center shadow-sm shadow-amber-200">
-            <ShieldCheck className="w-4.5 h-4.5 text-white" />
+          <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-sm shadow-primary/20">
+            <ShieldCheck className="w-4.5 h-4.5 text-primary-foreground" />
           </div>
-          <span className="font-bold text-xl tracking-tight text-slate-900">
+          <span className="font-bold text-xl tracking-tight text-foreground">
             BettaPay
           </span>
         </Link>
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        {navItems.map((item) => {
+        {merchantNavItems.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
           const Icon = item.icon;
@@ -61,14 +61,14 @@ export const MerchantSidebar = () => {
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
                 isActive
-                  ? "bg-amber-50 text-amber-700 border border-amber-200/80"
-                  : "text-slate-500 hover:bg-slate-100 hover:text-slate-800",
+                  ? "bg-primary/10 text-primary border border-primary/30"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
               <Icon
                 className={cn(
                   "w-4.5 h-4.5",
-                  isActive ? "text-amber-600" : "text-slate-400",
+                  isActive ? "text-primary" : "text-muted-foreground",
                 )}
               />
               {item.label}
@@ -78,13 +78,13 @@ export const MerchantSidebar = () => {
       </nav>
 
       {/* User footer */}
-      <div className="p-4 border-t border-slate-100">
+      <div className="p-4 border-t border-border">
         <div className="flex items-center gap-3 px-2 py-2">
-          <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
+          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-primary-foreground flex-shrink-0">
             MC
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-semibold text-slate-900 truncate">
+            <span className="text-sm font-semibold text-foreground truncate">
               Merchant Corp
             </span>
             <span className="text-xs text-emerald-600 flex items-center gap-1 font-medium">

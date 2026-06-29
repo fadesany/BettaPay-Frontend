@@ -105,7 +105,7 @@ export default function TransactionsPage() {
       tx.txHash.toLowerCase().includes(searchTerm.toLowerCase()) ||
       tx.payerAddress.toLowerCase().includes(searchTerm.toLowerCase())
     ),
-    [searchTerm, mockTransactions]
+    [searchTerm]
   );
 
   return (
@@ -127,17 +127,17 @@ export default function TransactionsPage() {
             <Input
               type="search"
               placeholder="Search by hash or address..."
-              className="w-full pl-9 bg-background/50 border-border/50 focus-visible:ring-brand-accent"
+              className="w-full pl-9 bg-background/50 border-border/50 focus-visible:ring-ring"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" className="relative flex-1 sm:flex-none border-border/50 bg-brand-surface">
+            <Button variant="outline" className="relative flex-1 sm:flex-none border-border/50 bg-card">
               <Filter className="w-4 h-4 mr-2" />
               Filter
               {filterCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">
+                <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
                   {filterCount}
                 </span>
               )}
@@ -147,7 +147,7 @@ export default function TransactionsPage() {
                 variant="outline"
                 disabled={!isOnline}
                 aria-disabled={!isOnline}
-                className="flex-1 sm:flex-none border-border/50 bg-brand-surface"
+                className="flex-1 sm:flex-none border-border/50 bg-card"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Export CSV
@@ -163,7 +163,7 @@ export default function TransactionsPage() {
           : `Showing ${filteredTransactions.length} transaction${filteredTransactions.length !== 1 ? 's' : ''}`}
       </p>
 
-      <Card className="bg-brand-surface border-border/50 shadow-sm">
+      <Card className="bg-card border-border/50 shadow-sm">
         <CardContent className="pt-4">
           <div className="rounded-md border border-border/50 overflow-x-auto hidden md:block">
             <Table>

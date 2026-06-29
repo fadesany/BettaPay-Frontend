@@ -105,9 +105,9 @@ export default function Verify2FAPage() {
   return (
     <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="mb-10">
-        <p className="text-xs font-semibold tracking-widest text-amber-500 uppercase mb-3">Security Verification</p>
-        <h1 className="text-4xl font-bold text-slate-900 leading-tight">Two-Factor<br />Authentication</h1>
-        <p className="text-slate-400 mt-3 text-sm">
+        <p className="text-xs font-semibold tracking-widest text-primary uppercase mb-3">Security Verification</p>
+        <h1 className="text-4xl font-bold text-foreground leading-tight">Two-Factor<br />Authentication</h1>
+        <p className="text-muted-foreground mt-3 text-sm">
           Enter the 6-digit code sent to your authenticator app or phone.
         </p>
       </div>
@@ -131,7 +131,7 @@ export default function Verify2FAPage() {
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   autoComplete={index === 0 ? 'one-time-code' : 'off'}
-                  className="h-14 w-full text-center text-xl font-bold bg-white border border-slate-200 text-slate-900 rounded-xl focus-visible:ring-1 focus-visible:ring-amber-400 focus-visible:border-amber-400 transition-all"
+                  className="h-14 w-full text-center text-xl font-bold bg-card border border-border text-foreground rounded-xl focus-visible:ring-1 focus-visible:ring-ring focus-visible:border-ring transition-all"
                   aria-label={`Digit ${index + 1} of ${CODE_LENGTH}`}
                 />
               </div>
@@ -142,7 +142,7 @@ export default function Verify2FAPage() {
         <Button
           type="submit"
           disabled={isLoading || digits.join('').length < CODE_LENGTH}
-          className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm rounded-xl border-0 transition-colors scroll-mb-52"
+          className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-semibold text-sm rounded-xl border-0 transition-colors scroll-mb-52"
         >
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           Verify Code
@@ -150,13 +150,13 @@ export default function Verify2FAPage() {
       </form>
 
       <div className="mt-6 text-center">
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-muted-foreground">
           Didn&apos;t receive a code?{' '}
           <button
             type="button"
             onClick={handleResend}
             disabled={countdown > 0}
-            className="text-amber-600 font-semibold hover:text-amber-700 transition-colors disabled:text-slate-300 disabled:cursor-not-allowed"
+            className="text-primary font-semibold hover:text-primary transition-colors disabled:text-muted-foreground disabled:cursor-not-allowed"
             aria-live="polite"
             aria-label={countdown > 0 ? `Resend code available in ${countdown} seconds` : 'Resend code'}
           >

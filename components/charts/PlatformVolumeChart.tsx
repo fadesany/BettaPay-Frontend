@@ -32,14 +32,14 @@ export default function PlatformVolumeChart({
         <BarChart data={mockChartData}>
           <XAxis
             dataKey="name"
-            stroke="hsl(var(--muted-foreground))"
+            stroke="var(--muted-foreground)"
             fontSize={12}
             tickLine={false}
             axisLine={false}
           />
           <YAxis
             yAxisId="left"
-            stroke="hsl(var(--muted-foreground))"
+            stroke="var(--muted-foreground)"
             fontSize={12}
             tickLine={false}
             axisLine={false}
@@ -47,22 +47,22 @@ export default function PlatformVolumeChart({
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: "hsl(var(--card))",
-              borderColor: "hsl(var(--border))",
-              color: "hsl(var(--foreground))",
+              backgroundColor: "var(--card)",
+              borderColor: "var(--border)",
+              color: "var(--foreground)",
             }}
-            cursor={{ fill: "hsl(var(--accent))" }}
+            cursor={{ fill: "var(--accent)" }}
           />
           <Bar
             yAxisId="left"
             dataKey="volume"
-            fill="hsl(var(--border))"
+            fill="var(--border)"
             radius={[4, 4, 0, 0]}
           />
           <Bar
             yAxisId="left"
             dataKey="fee"
-            fill="hsl(var(--primary))"
+            fill="var(--primary)"
             radius={[4, 4, 0, 0]}
           />
         </BarChart>

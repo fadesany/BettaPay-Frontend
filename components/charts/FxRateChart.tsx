@@ -30,9 +30,9 @@ interface FxTooltipProps {
 const FxTooltip = ({ active, payload, label }: FxTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-lg text-sm">
-        <p className="font-semibold text-slate-700 mb-1">{label}</p>
-        <p className="text-amber-600 font-bold">
+      <div className="bg-card border border-border rounded-xl p-3 shadow-lg text-sm">
+        <p className="font-semibold text-foreground mb-1">{label}</p>
+        <p className="text-primary font-bold">
           ₦{payload[0]?.value?.toLocaleString()}
         </p>
       </div>
@@ -65,7 +65,7 @@ export default function FxRateChart({ height = 240 }: FxRateChartProps) {
         >
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke="#F1F5F9"
+            stroke="var(--border)"
             vertical={false}
           />
           <XAxis
@@ -73,27 +73,27 @@ export default function FxRateChart({ height = 240 }: FxRateChartProps) {
             fontSize={11}
             tickLine={false}
             axisLine={false}
-            tick={{ fill: "#94A3B8" }}
+            tick={{ fill: "var(--muted-foreground)" }}
           />
           <YAxis
             fontSize={11}
             tickLine={false}
             axisLine={false}
             tickFormatter={(v) => `₦${v}`}
-            tick={{ fill: "#94A3B8" }}
+            tick={{ fill: "var(--muted-foreground)" }}
             domain={["auto", "auto"]}
           />
           <Tooltip content={<FxTooltip />} />
           <Line
             type="monotone"
             dataKey="rate"
-            stroke="#F0A500"
+            stroke="var(--primary)"
             strokeWidth={2.5}
             dot={false}
             activeDot={{
               r: 5,
-              fill: "#F0A500",
-              stroke: "#fff",
+              fill: "var(--primary)",
+              stroke: "var(--card)",
               strokeWidth: 2,
             }}
           />

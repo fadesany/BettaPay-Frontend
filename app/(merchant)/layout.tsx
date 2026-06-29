@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { MerchantSidebar } from "@/components/layout/MerchantSidebar";
+import { MerchantSidebar, merchantNavItems } from "@/components/layout/MerchantSidebar";
 import { MobileNavDrawer } from "@/components/layout/MobileNavDrawer";
 import { Topbar } from "@/components/layout/Topbar";
 import Footer from "@/components/layout/Footer";
@@ -25,6 +25,7 @@ export default function MerchantLayout({
       <MobileNavDrawer
         isOpen={mobileMenuOpen}
         onClose={closeMobileMenu}
+        navItems={merchantNavItems}
       />
 
       <MobileBottomNav />
