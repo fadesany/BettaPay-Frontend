@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { NetworkTooltip } from '@/components/ui/network-tooltip';
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { useOfflineStore } from '@/lib/store/offlineStore';
+import { SettlementConfirmation } from '@/components/settlement/SettlementConfirmation';
 import { memo } from 'react';
 
 interface Settlement {
@@ -60,6 +62,7 @@ const mockSettlements = [
 
 export default function SettlementPage() {
   const isOnline = useOfflineStore((s) => s.isOnline);
+  const [settlementOpen, setSettlementOpen] = useState(false);
 
   return (
     <div className="space-y-8 pb-8">
@@ -75,6 +78,7 @@ export default function SettlementPage() {
           <Button
             disabled={!isOnline}
             aria-disabled={!isOnline}
+            onClick={() => setSettlementOpen(true)}
             className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl h-10 px-5 text-sm shadow-sm shadow-primary/20"
           >
             <Banknote className="w-4 h-4 mr-2" />
@@ -82,6 +86,11 @@ export default function SettlementPage() {
           </Button>
         </NetworkTooltip>
       </div>
+
+      <SettlementConfirmation
+        isOpen={settlementOpen}
+        onClose={() => setSettlementOpen(false)}
+      />
 
       {/* Balance summary */}
       <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
