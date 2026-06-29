@@ -24,7 +24,7 @@ interface TopbarProps {
   unreadNotificationCount?: number;
 }
 
-export const Topbar = ({ onMenuClick, isMenuOpen, title }: TopbarProps) => {
+export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount = 0 }: TopbarProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { user, logout } = useAuthStore();
   const notify = useNotify();
@@ -61,6 +61,7 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title }: TopbarProps) => {
           className="md:hidden text-slate-400 hover:text-slate-700 min-h-[44px] min-w-[44px]"
           onClick={onMenuClick}
           aria-expanded={isMenuOpen}
+          aria-controls="mobile-nav"
           aria-label="Toggle mobile menu"
         >
           <Menu className="h-5 w-5" />
@@ -100,7 +101,7 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title }: TopbarProps) => {
           className="relative text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl min-h-[44px] min-w-[44px]"
         >
           <Bell className="h-4.5 w-4.5" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>
+          <span aria-hidden="true" className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>
         </Button>
 
         {/* User menu */}
