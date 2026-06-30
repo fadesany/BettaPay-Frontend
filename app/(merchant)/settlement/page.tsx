@@ -15,7 +15,9 @@ import {
   ChevronRight,
   Download,
   Receipt,
+  ExternalLink,
 } from 'lucide-react';
+import { getStellarExplorerTxUrl } from '@/lib/utils/explorer';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { useOfflineStore } from '@/lib/store/offlineStore';
 import { SettlementConfirmation } from '@/components/settlement/SettlementConfirmation';
@@ -29,6 +31,7 @@ interface Settlement {
   date: string;
   bank: string;
   accountNo: string;
+  txHash?: string;
 }
 
 interface SettlementItemProps {
@@ -49,14 +52,28 @@ const SettlementItem = memo(function SettlementItem({ settlement: s }: Settlemen
         <p className="text-sm font-bold text-foreground"><CurrencyDisplay amount={s.amount} /></p>
         <p className="text-xs text-muted-foreground">₦{s.amountNgn.toLocaleString()}</p>
       </div>
-      <StatusBadge status={s.status as 'completed' | 'pending' | 'failed'} />
+      <div className="flex items-center gap-2">
+        <StatusBadge status={s.status as 'completed' | 'pending' | 'failed'} />
+        {s.txHash && (
+          <a
+            href={getStellarExplorerTxUrl(s.txHash)}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View on Stellar Explorer"
+          >
+            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg">
+              <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+            </Button>
+          </a>
+        )}
+      </div>
     </div>
   );
 });
 
 const mockSettlements = [
-  { id: 'stl_01', amount: 12450.00, amountNgn: 19297500, status: 'completed', date: '2024-01-10', bank: 'GTBank', accountNo: '012****567' },
-  { id: 'stl_02', amount: 8200.50, amountNgn: 12710775, status: 'pending', date: '2024-01-12', bank: 'First Bank', accountNo: '302****814' },
+  { id: 'stl_01', amount: 12450.00, amountNgn: 19297500, status: 'completed', date: '2024-01-10', bank: 'GTBank', accountNo: '012****567', txHash: '0x1234567890abcdef1234567890abcdef12345678' },
+  { id: 'stl_02', amount: 8200.50, amountNgn: 12710775, status: 'pending', date: '2024-01-12', bank: 'First Bank', accountNo: '302****814', txHash: '0xabcdef1234567890abcdef1234567890abcdef12' },
   { id: 'stl_03', amount: 5000.00, amountNgn: 7750000, status: 'completed', date: '2024-01-08', bank: 'GTBank', accountNo: '012****567' },
 ];
 

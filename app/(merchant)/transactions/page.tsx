@@ -13,7 +13,8 @@ import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { mockTransactions } from '@/lib/mock/transactions';
 import { formatDate } from '@/lib/utils/format';
-import { Search, Download, Filter, SearchX } from 'lucide-react';
+import { Search, Download, Filter, SearchX, ExternalLink } from 'lucide-react';
+import { getStellarExplorerTxUrl } from '@/lib/utils/explorer';
 import { TransactionDetail } from '@/components/transactions/TransactionDetail';
 import { Transaction } from '@/lib/mock/transactions';
 import { useOfflineStore } from '@/lib/store/offlineStore';
@@ -50,6 +51,21 @@ const TransactionRow = memo(function TransactionRow({ tx, onClick }: Transaction
       <TableCell className="text-center">
         <StatusBadge status={tx.status} />
       </TableCell>
+      <TableCell className="text-center">
+        {tx.txHash && (
+          <a
+            href={getStellarExplorerTxUrl(tx.txHash)}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View on Stellar Explorer"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg">
+              <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+            </Button>
+          </a>
+        )}
+      </TableCell>
     </TableRow>
   );
 });
@@ -76,7 +92,22 @@ const TransactionCard = memo(function TransactionCard({ tx, onClick }: Transacti
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">Tx Hash</span>
-          <CopyAddress address={tx.txHash} />
+          <div className="flex items-center gap-2">
+            <CopyAddress address={tx.txHash} />
+            {tx.txHash && (
+              <a
+                href={getStellarExplorerTxUrl(tx.txHash)}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View on Stellar Explorer"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg">
+                  <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+                </Button>
+              </a>
+            )}
+          </div>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">Source</span>
@@ -97,7 +128,7 @@ const TransactionCard = memo(function TransactionCard({ tx, onClick }: Transacti
 
 export default function TransactionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearch = useDebounceValue(searchTerm, 300);
+  const [debouncedSearch] = useDebounceValue(searchTerm, 300);
   const [filterCount] = useState(0);
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
   const isOnline = useOfflineStore((s) => s.isOnline);
@@ -178,12 +209,13 @@ export default function TransactionsPage() {
                   <TableHead className="text-right">Amount (USDC)</TableHead>
                   <TableHead className="text-right">Amount (NGN)</TableHead>
                   <TableHead className="text-center">Status</TableHead>
+                  <TableHead className="text-center w-[80px]">Explorer</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredTransactions.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="p-0">
+                    <TableCell colSpan={8} className="p-0">
                       <EmptyState
                         icon={SearchX}
                         title={searchTerm ? 'No transactions match your search' : 'No transactions found'}
