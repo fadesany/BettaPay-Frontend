@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { Bell, Search, Menu, LogOut, Settings, KeyRound, Moon, Sun, Repeat } from "lucide-react";
+import { Bell, Search, Menu, LogOut, Settings, KeyRound, Moon, Sun, Monitor, Repeat } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +31,7 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
   const { user, logout } = useAuthStore();
   const notify = useNotify();
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
   const notificationLabel =
     unreadNotificationCount > 0
@@ -48,10 +48,27 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
     setIsMounted(true);
   }, []);
 
-  const isDark = isMounted && theme === "dark";
+  const isDark = isMounted && resolvedTheme === "dark";
+
+  // Cycle: light → dark → system → light
+  const THEME_CYCLE: Array<"light" | "dark" | "system"> = ["light", "dark", "system"];
   const toggleTheme = useCallback(() => {
-    setTheme(isDark ? "light" : "dark");
-  }, [isDark, setTheme]);
+    const current = theme as "light" | "dark" | "system";
+    const next = THEME_CYCLE[(THEME_CYCLE.indexOf(current) + 1) % THEME_CYCLE.length];
+    setTheme(next);
+  }, [theme, setTheme]);
+
+  const themeIcon = !isMounted ? null : theme === "system"
+    ? <Monitor className="h-4.5 w-4.5" />
+    : isDark
+      ? <Sun className="h-4.5 w-4.5" />
+      : <Moon className="h-4.5 w-4.5" />;
+
+  const themeLabel = !isMounted ? "Toggle theme" : theme === "system"
+    ? "Using system theme — click for light"
+    : isDark
+      ? "Switch to system theme"
+      : "Switch to dark theme";
 
   const initials = user?.name
     ? user.name
@@ -150,11 +167,11 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
         <Button
           variant="ghost"
           size="icon"
-          aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+          aria-label={themeLabel}
           className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl min-h-[44px] min-w-[44px]"
           onClick={toggleTheme}
         >
-          {isDark ? <Sun className="h-4.5 w-4.5" /> : <Moon className="h-4.5 w-4.5" />}
+          {themeIcon}
         </Button>
 
         {/* User menu */}
