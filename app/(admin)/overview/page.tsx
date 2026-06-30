@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
 import { Users, AlertTriangle, ArrowUpRight, Activity, DollarSign } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { StatCard } from '@/components/shared/StatCard';
 
 const PlatformVolumeChart = dynamic(() => import('@/components/charts/PlatformVolumeChart'), {
   ssr: false,
@@ -22,64 +23,31 @@ export default function AdminOverviewPage() {
       </div>
 
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-card border shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 z-10 relative">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Processed (30d)</CardTitle>
-            <Activity className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent className="p-3 sm:p-4 z-10 relative">
-            <div className="text-xl sm:text-2xl font-bold text-foreground">
-              <CurrencyDisplay amount={1452310.89} />
-            </div>
-            <p className="text-xs text-green-500 flex items-center mt-1">
-              <ArrowUpRight className="h-3 w-3 mr-1" />
-              +12.5% from last month
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Platform Fees Generated</CardTitle>
-            <DollarSign className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent className="p-3 sm:p-4">
-            <div className="text-xl sm:text-2xl font-bold text-foreground">
-              <CurrencyDisplay amount={14523.10} />
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              1.0% flat fee across volume
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Active Merchants</CardTitle>
-            <Users className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent className="p-3 sm:p-4">
-            <div className="text-xl sm:text-2xl font-bold text-foreground">142</div>
-            <p className="text-xs text-green-500 flex items-center mt-1">
-              <ArrowUpRight className="h-3 w-3 mr-1" />
-              +12 new this week
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-destructive/10 border-destructive/20 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-destructive">Pending KYB Reviews</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-destructive" />
-          </CardHeader>
-          <CardContent className="p-3 sm:p-4">
-            <div className="text-xl sm:text-2xl font-bold text-destructive">8</div>
-            <p className="text-xs text-destructive/80 mt-1">
-              Requires immediate action
-            </p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Total Processed (30d)"
+          icon={Activity}
+          value={<CurrencyDisplay amount={1452310.89} />}
+          trend={{ icon: ArrowUpRight, label: "+12.5% from last month", color: "text-green-500" }}
+        />
+        <StatCard
+          title="Platform Fees Generated"
+          icon={DollarSign}
+          value={<CurrencyDisplay amount={14523.10} />}
+          trend={{ label: "1.0% flat fee across volume" }}
+        />
+        <StatCard
+          title="Active Merchants"
+          icon={Users}
+          value="142"
+          trend={{ icon: ArrowUpRight, label: "+12 new this week", color: "text-green-500" }}
+        />
+        <StatCard
+          title="Pending KYB Reviews"
+          icon={AlertTriangle}
+          value="8"
+          variant="destructive"
+          trend={{ label: "Requires immediate action" }}
+        />
       </div>
 
       <div className="grid gap-4 md:grid-cols-7">

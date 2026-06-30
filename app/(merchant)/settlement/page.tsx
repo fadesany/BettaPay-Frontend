@@ -19,6 +19,7 @@ import {
 import { EmptyState } from '@/components/shared/EmptyState';
 import { useOfflineStore } from '@/lib/store/offlineStore';
 import { SettlementConfirmation } from '@/components/settlement/SettlementConfirmation';
+import { StatCard } from '@/components/shared/StatCard';
 import { memo } from 'react';
 import { mockSettlements, type Settlement } from '@/lib/mock/settlements';
 
@@ -79,34 +80,22 @@ export default function SettlementPage() {
 
       {/* Balance summary */}
       <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
-        <Card className="border border-border bg-card shadow-sm relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-50/60 to-transparent pointer-events-none" />
-          <CardHeader className="pb-2 relative">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Available to Settle</CardTitle>
-          </CardHeader>
-          <CardContent className="p-3 sm:p-4 relative">
-            <p className="text-xl sm:text-2xl font-bold text-foreground"><CurrencyDisplay amount={12450.00} /></p>
-            <p className="text-xs text-muted-foreground mt-1">≈ ₦19,297,500</p>
-          </CardContent>
-        </Card>
-        <Card className="border border-border bg-card shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Pending Settlement</CardTitle>
-          </CardHeader>
-          <CardContent className="p-3 sm:p-4">
-            <p className="text-xl sm:text-2xl font-bold text-foreground"><CurrencyDisplay amount={8200.50} /></p>
-            <p className="text-xs text-primary mt-1 flex items-center gap-1"><Clock className="w-3 h-3" /> Processing</p>
-          </CardContent>
-        </Card>
-        <Card className="border border-border bg-card shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Settled (30d)</CardTitle>
-          </CardHeader>
-          <CardContent className="p-3 sm:p-4">
-            <p className="text-xl sm:text-2xl font-bold text-foreground"><CurrencyDisplay amount={38750.00} /></p>
-            <p className="text-xs text-emerald-600 mt-1 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> All completed</p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Available to Settle"
+          value={<CurrencyDisplay amount={12450.00} />}
+          color="amber"
+          trend={{ label: "≈ ₦19,297,500" }}
+        />
+        <StatCard
+          title="Pending Settlement"
+          value={<CurrencyDisplay amount={8200.50} />}
+          trend={{ icon: Clock, label: "Processing", color: "text-primary" }}
+        />
+        <StatCard
+          title="Total Settled (30d)"
+          value={<CurrencyDisplay amount={38750.00} />}
+          trend={{ icon: CheckCircle2, label: "All completed", color: "text-emerald-600" }}
+        />
       </div>
 
       {/* Settlement history */}

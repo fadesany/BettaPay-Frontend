@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
 import { StatusBadge } from '@/components/shared/StatusBadge';
+import { StatCard } from '@/components/shared/StatCard';
 import { ErrorDisplay } from '@/components/shared/ErrorDisplay';
 import {
   ArrowUpRight,
@@ -122,87 +123,34 @@ export default function DashboardPage() {
           </div>
         ) : (
           <>
-            {/* Card 1 */}
-            <Card className="relative overflow-hidden border border-border bg-card shadow-sm hover:shadow-md transition-shadow">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-50/60 to-transparent pointer-events-none" />
-              <CardHeader className="flex flex-row items-center justify-between pb-2 relative">
-                <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Total Volume (30d)
-                </CardTitle>
-                <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                  <Activity className="h-4 w-4 text-primary" />
-                </div>
-              </CardHeader>
-              <CardContent className="p-3 sm:p-4 relative">
-                <div className="text-xl sm:text-2xl font-bold text-foreground">
-                  <CurrencyDisplay amount={45231.89} />
-                </div>
-                <p className="text-xs text-emerald-600 flex items-center mt-1.5 font-medium">
-                  <ArrowUpRight className="h-3 w-3 mr-1" />
-                  +20.1% from last month
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Card 2 */}
-            <Card className="relative overflow-hidden border border-border bg-card shadow-sm hover:shadow-md transition-shadow">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-50/60 to-transparent pointer-events-none" />
-              <CardHeader className="flex flex-row items-center justify-between pb-2 relative">
-                <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Active Payment Links
-                </CardTitle>
-                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <CreditCard className="h-4 w-4 text-blue-600" />
-                </div>
-              </CardHeader>
-              <CardContent className="p-3 sm:p-4 relative">
-                <div className="text-xl sm:text-2xl font-bold text-foreground">12</div>
-                <p className="text-xs text-muted-foreground mt-1.5 font-medium">
-                  +3 new links this week
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Card 3 */}
-            <Card className="relative overflow-hidden border border-border bg-card shadow-sm hover:shadow-md transition-shadow">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/60 to-transparent pointer-events-none" />
-              <CardHeader className="flex flex-row items-center justify-between pb-2 relative">
-                <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Available to Settle
-                </CardTitle>
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                  <Wallet className="h-4 w-4 text-emerald-600" />
-                </div>
-              </CardHeader>
-              <CardContent className="p-3 sm:p-4 relative">
-                <div className="text-xl sm:text-2xl font-bold text-foreground">
-                  <CurrencyDisplay amount={12450.00} />
-                </div>
-                <p className="text-xs text-primary flex items-center mt-1.5 font-medium">
-                  <ArrowDownRight className="h-3 w-3 mr-1" />
-                  Pending NGN conversion
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Card 4 */}
-            <Card className="relative overflow-hidden border border-border bg-card shadow-sm hover:shadow-md transition-shadow">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-50/60 to-transparent pointer-events-none" />
-              <CardHeader className="flex flex-row items-center justify-between pb-2 relative">
-                <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Current FX Rate
-                </CardTitle>
-                <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
-                  <RefreshCcw className="h-4 w-4 text-purple-600" />
-                </div>
-              </CardHeader>
-              <CardContent className="p-3 sm:p-4 relative">
-                <div className="text-xl sm:text-2xl font-bold text-foreground">₦1,550</div>
-                <p className="text-xs text-muted-foreground mt-1.5 font-medium">
-                  per USDC · Updated 5m ago
-                </p>
-              </CardContent>
-            </Card>
+            <StatCard
+              title="Total Volume (30d)"
+              icon={Activity}
+              color="amber"
+              value={<CurrencyDisplay amount={45231.89} />}
+              trend={{ icon: ArrowUpRight, label: "+20.1% from last month", color: "text-emerald-600" }}
+            />
+            <StatCard
+              title="Active Payment Links"
+              icon={CreditCard}
+              color="blue"
+              value="12"
+              trend={{ label: "+3 new links this week" }}
+            />
+            <StatCard
+              title="Available to Settle"
+              icon={Wallet}
+              color="emerald"
+              value={<CurrencyDisplay amount={12450.00} />}
+              trend={{ icon: ArrowDownRight, label: "Pending NGN conversion", color: "text-primary" }}
+            />
+            <StatCard
+              title="Current FX Rate"
+              icon={RefreshCcw}
+              color="purple"
+              value="₦1,550"
+              trend={{ label: "per USDC · Updated 5m ago" }}
+            />
           </>
         )}
       </div>
