@@ -15,7 +15,9 @@ import {
   ChevronRight,
   Download,
   Receipt,
+  ExternalLink,
 } from 'lucide-react';
+import { getStellarExplorerTxUrl } from '@/lib/utils/explorer';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { useOfflineStore } from '@/lib/store/offlineStore';
 import { SettlementConfirmation } from '@/components/settlement/SettlementConfirmation';
@@ -40,7 +42,21 @@ const SettlementItem = memo(function SettlementItem({ settlement: s }: Settlemen
         <p className="text-sm font-bold text-foreground"><CurrencyDisplay amount={s.amount} /></p>
         <p className="text-xs text-muted-foreground">₦{s.amountNgn.toLocaleString()}</p>
       </div>
-      <StatusBadge status={s.status as 'completed' | 'pending' | 'failed'} />
+      <div className="flex items-center gap-2">
+        <StatusBadge status={s.status as 'completed' | 'pending' | 'failed'} />
+        {s.txHash && (
+          <a
+            href={getStellarExplorerTxUrl(s.txHash)}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View on Stellar Explorer"
+          >
+            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg">
+              <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+            </Button>
+          </a>
+        )}
+      </div>
     </div>
   );
 });

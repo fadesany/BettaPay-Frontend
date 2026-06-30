@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, memo, useMemo } from 'react';
+import { useState, memo, useMemo, useRef } from 'react';
 import { useDebounceValue } from 'usehooks-ts';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -14,7 +14,9 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import { mockTransactions } from '@/lib/mock/transactions';
 import { formatDate } from '@/lib/utils/format';
 import { sanitizeSearchQuery } from '@/lib/utils/sanitize';
-import { Search, Download, Filter, SearchX } from 'lucide-react';
+import { Search, Download, Filter, SearchX, ExternalLink } from 'lucide-react';
+import { getStellarExplorerTxUrl } from '@/lib/utils/explorer';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { TransactionDetail } from '@/components/transactions/TransactionDetail';
 import { Transaction } from '@/lib/mock/transactions';
 import { useOfflineStore } from '@/lib/store/offlineStore';
@@ -51,6 +53,21 @@ const TransactionRow = memo(function TransactionRow({ tx, onClick }: Transaction
       <TableCell className="text-center">
         <StatusBadge status={tx.status} />
       </TableCell>
+      <TableCell className="text-center">
+        {tx.txHash && (
+          <a
+            href={getStellarExplorerTxUrl(tx.txHash)}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View on Stellar Explorer"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg">
+              <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+            </Button>
+          </a>
+        )}
+      </TableCell>
     </TableRow>
   );
 });
@@ -77,7 +94,22 @@ const TransactionCard = memo(function TransactionCard({ tx, onClick }: Transacti
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">Tx Hash</span>
-          <CopyAddress address={tx.txHash} />
+          <div className="flex items-center gap-2">
+            <CopyAddress address={tx.txHash} />
+            {tx.txHash && (
+              <a
+                href={getStellarExplorerTxUrl(tx.txHash)}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View on Stellar Explorer"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg">
+                  <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+                </Button>
+              </a>
+            )}
+          </div>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">Source</span>
@@ -99,7 +131,7 @@ const TransactionCard = memo(function TransactionCard({ tx, onClick }: Transacti
 export default function TransactionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const sanitizedOnChange = (value: string) => setSearchTerm(sanitizeSearchQuery(value));
-  const debouncedSearch = useDebounceValue(searchTerm, 300);
+  const [debouncedSearch] = useDebounceValue(searchTerm, 300);
   const [filterCount] = useState(0);
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
   const isOnline = useOfflineStore((s) => s.isOnline);
@@ -207,6 +239,7 @@ export default function TransactionsPage() {
                     <th className="px-4 py-2 text-right text-sm font-medium">Amount (USDC)</th>
                     <th className="px-4 py-2 text-right text-sm font-medium">Amount (NGN)</th>
                     <th className="px-4 py-2 text-center text-sm font-medium">Status</th>
+                    <th className="w-[80px] px-4 py-2 text-center text-sm font-medium">Explorer</th>
                   </tr>
                 </thead>
               </table>
@@ -248,6 +281,21 @@ export default function TransactionsPage() {
                             </td>
                             <td className="text-center px-4 py-2 text-sm">
                               <StatusBadge status={tx.status} />
+                            </td>
+                            <td className="w-[80px] text-center px-4 py-2 text-sm">
+                              {tx.txHash && (
+                                <a
+                                  href={getStellarExplorerTxUrl(tx.txHash)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  aria-label="View on Stellar Explorer"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg">
+                                    <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+                                  </Button>
+                                </a>
+                              )}
                             </td>
                           </tr>
                         );
