@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, memo, useMemo } from 'react';
+import { useDebounceValue } from 'usehooks-ts';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
@@ -12,6 +13,7 @@ import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { mockTransactions } from '@/lib/mock/transactions';
 import { formatDate } from '@/lib/utils/format';
+import { sanitizeSearchQuery } from '@/lib/utils/sanitize';
 import { Search, Download, Filter, SearchX } from 'lucide-react';
 import { TransactionDetail } from '@/components/transactions/TransactionDetail';
 import { Transaction } from '@/lib/mock/transactions';
@@ -96,16 +98,18 @@ const TransactionCard = memo(function TransactionCard({ tx, onClick }: Transacti
 
 export default function TransactionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const sanitizedOnChange = (value: string) => setSearchTerm(sanitizeSearchQuery(value));
+  const debouncedSearch = useDebounceValue(searchTerm, 300);
   const [filterCount] = useState(0);
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
   const isOnline = useOfflineStore((s) => s.isOnline);
 
   const filteredTransactions = useMemo(() =>
     mockTransactions.filter(tx =>
-      tx.txHash.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tx.payerAddress.toLowerCase().includes(searchTerm.toLowerCase())
+      tx.txHash.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      tx.payerAddress.toLowerCase().includes(debouncedSearch.toLowerCase())
     ),
-    [searchTerm]
+    [debouncedSearch]
   );
 
   return (
@@ -129,7 +133,7 @@ export default function TransactionsPage() {
               placeholder="Search by hash or address..."
               className="w-full pl-9 bg-background/50 border-border/50 focus-visible:ring-ring"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+               onChange={(e) => sanitizedOnChange(e.target.value)}
             />
           </div>
           <div className="flex gap-2">

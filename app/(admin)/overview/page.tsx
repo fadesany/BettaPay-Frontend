@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from 'react';
 import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CurrencyDisplay } from '@/components/shared/CurrencyDisplay';
@@ -9,6 +10,22 @@ import { Skeleton } from '@/components/ui/skeleton';
 const PlatformVolumeChart = dynamic(() => import('@/components/charts/PlatformVolumeChart'), {
   ssr: false,
   loading: () => <Skeleton className="h-[300px] w-full rounded-xl" />,
+});
+
+// Memoised so future additions of state to the parent won't re-render the chart.
+const AdminChartSection = memo(function AdminChartSection() {
+  return (
+    <Card className="col-span-4 bg-card border shadow-sm">
+      <CardHeader>
+        <CardTitle>Platform Volume vs Fees</CardTitle>
+      </CardHeader>
+      <CardContent className="pl-2">
+        <div className="mt-4">
+          <PlatformVolumeChart height={300} />
+        </div>
+      </CardContent>
+    </Card>
+  );
 });
 
 export default function AdminOverviewPage() {
@@ -68,7 +85,7 @@ export default function AdminOverviewPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-destructive/10 border-destructive/20 shadow-sm">
+        <Card className="col-span-1 bg-destructive/10 border-destructive/20 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-destructive">Pending KYB Reviews</CardTitle>
             <AlertTriangle className="h-4 w-4 text-destructive" />
@@ -83,16 +100,8 @@ export default function AdminOverviewPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-7">
-        <Card className="col-span-4 bg-card border shadow-sm">
-          <CardHeader>
-            <CardTitle>Platform Volume vs Fees</CardTitle>
-          </CardHeader>
-          <CardContent className="pl-2">
-            <div className="mt-4">
-              <PlatformVolumeChart height={300} />
-            </div>
-          </CardContent>
-        </Card>
+        {/* Chart section is memoised */}
+        <AdminChartSection />
 
         <Card className="col-span-3 bg-card border shadow-sm">
           <CardHeader>
@@ -110,7 +119,7 @@ export default function AdminOverviewPage() {
                 </div>
                 <span className="text-xs font-mono text-muted-foreground">14ms ping</span>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-success"></div>

@@ -1,21 +1,19 @@
-Replace all tags with next/image
-Repo Avatar
-Betta-Pay/BettaPay-Frontend
-Description: The project uses rawtags in several places (app/auth/layout.tsx, app/(merchant)/wallet/page.tsx, app/page.tsx). Next.js's component provides automatic WebP/AVIF conversion, responsive sizing, lazy loading, and blur-up placeholders — all of which improve LCP (Largest Contentful Paint) and overall performance.
+Description: Mock data arrays are defined inline at the top of page files: mockChartData in dashboard, mockTransactions in dashboard, mockPaymentLinks in dashboard, mockLinks in payments, mockTxHistory in wallet, mockSettlements in settlement, mockKeys in developers. This clutters page files and makes it hard to swap mock data for real API data.
 
 Requirements:
 
-Replace everytag with from next/image
-Add explicit width and height attributes to each Image
-Use priority on above-the-fold images (logo in auth layout, landing page hero)
-Use placeholder="blur" with a blurDataURL for important images
-Keep the existing alt text
+Create lib/mock/dashboard.ts, lib/mock/transactions.ts, lib/mock/paymentLinks.ts, lib/mock/wallet.ts, lib/mock/settlements.ts, lib/mock/developers.ts
+Move all mock data arrays from page files to these dedicated files
+Export them as named exports
+Import them in the page files
 Suggested execution steps:
 
-Import Image from next/image in every file with tags
-Replace
-DRIPS LOGO
-with
-For the logo: add priority since it's in the header of every auth page
-For wallet page logo: add width={32} height={32}
-Run npm run build to verify no image-related errors
+Create the mock data files under lib/mock/
+Move mockChartData, mockTransactions, mockPaymentLinks from app/(merchant)/dashboard/page.tsx
+Move mockLinks from app/(merchant)/payments/page.tsx
+Move mockTxHistory from app/(merchant)/wallet/page.tsx
+Move mockSettlements from app/(merchant)/settlement/page.tsx
+Move mockKeys and codeExample from app/(merchant)/developers/page.tsx
+Move fxHistory and pairs from app/(merchant)/fx/page.tsx
+Move mockChartData from app/(admin)/overview/page.tsx
+Update all imports in page files

@@ -14,7 +14,6 @@ import {
   ArrowRight,
   X,
   ChevronRight,
-  Zap,
 } from "lucide-react";
 
 interface Step {
@@ -74,7 +73,7 @@ const STEPS: Step[] = [
 export const OnboardingWizard = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [visible, setVisible] = useState(false);
-  const { isConnected, connect } = useWalletStore();
+  const { isConnected } = useWalletStore();
 
   useEffect(() => {
     const completed = localStorage.getItem("onboardingCompleted");
@@ -114,7 +113,6 @@ export const OnboardingWizard = () => {
 
   if (!visible) return null;
 
-  const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === STEPS.length - 1;
   const progressPercent = ((currentStep + 1) / STEPS.length) * 100;
   const StepIcon = STEPS[currentStep].icon;
@@ -173,7 +171,7 @@ export const OnboardingWizard = () => {
             <div className="flex items-center gap-2">
               {STEPS[currentStep].cta.href ? (
                 <Link href={STEPS[currentStep].cta.href} onClick={handleNext}>
-                  <Button size="sm" className="shadow-sm shadow-primary/20">
+                  <Button size="sm" className="shadow-button">
                     {STEPS[currentStep].cta.label}
                     <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                   </Button>
@@ -181,7 +179,7 @@ export const OnboardingWizard = () => {
               ) : (
                 <Button
                   size="sm"
-                  className="shadow-sm shadow-primary/20"
+                  className="shadow-button"
                   onClick={() => handleStepCta(STEPS[currentStep])}
                 >
                   {isConnected ? "Connected" : STEPS[currentStep].cta.label}

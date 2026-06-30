@@ -117,7 +117,7 @@ export const SettlementConfirmation = ({
     return (
       <>
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 print:relative print:inset-auto print:p-0">
-          <div className="bg-popover rounded-xl border border-border/50 shadow-lg max-w-md w-full p-6 space-y-6 print:shadow-none print:border-0 print:max-w-full">
+          <div className="bg-popover rounded-xl border border-border/50 shadow-dropdown max-w-md w-full p-6 space-y-6 print:shadow-none print:border-0 print:max-w-full">
             <div className="text-center space-y-2 print:mb-6">
               <div className="w-12 h-12 bg-success/20 dark:bg-success/10 rounded-full flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-6 h-6 text-success dark:text-emerald-400" />
@@ -299,7 +299,7 @@ export const SettlementConfirmation = ({
             disabled={!confirmed}
             className={cn(
               "flex-1 transition-all",
-              confirmed && "shadow-sm shadow-primary/20"
+              confirmed && "shadow-button"
             )}
           >
             Confirm Settlement

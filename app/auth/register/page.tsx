@@ -10,6 +10,7 @@ import { Loader2, Check } from 'lucide-react';
 import { useNotify } from '@/lib/hooks/useNotify';
 
 import { registerSchema, RegisterFormValues, passwordRequirements } from '@/lib/utils/validation';
+import { trimInput, normalizeEmail } from '@/lib/utils/sanitize';
 import { useWalletStore } from '@/lib/store/walletStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,12 +56,17 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterFormValues) => {
     setIsLoading(true);
+    const sanitizedData = {
+      ...data,
+      businessName: trimInput(data.businessName),
+      email: normalizeEmail(data.email),
+    };
     try {
       try {
         const { apiClient } = await import('@/lib/api/axios');
         await apiClient.post('/api/merchants', {
           id: `merch_${Math.random().toString(36).substr(2, 9)}`,
-          name: data.businessName,
+          name: sanitizedData.businessName,
         });
       } catch {
         console.warn('Backend unavailable, falling back to mock registration for Vercel preview.');
@@ -204,7 +210,7 @@ export default function RegisterPage() {
             <CardFooter className="flex flex-col space-y-6 pb-8 pt-4 px-8">
               <Button
                 type="submit"
-                className="w-full h-12 text-base font-medium bg-primary text-white hover:bg-primary/90 shadow-[0_0_20px_rgba(240,165,0,0.3)] transition-all hover:shadow-[0_0_25px_rgba(240,165,0,0.5)] scroll-mb-52"
+                className="w-full h-12 text-base font-medium bg-primary text-white hover:bg-primary/90 shadow-glow transition-all hover:shadow-glow-hover scroll-mb-52"
                 disabled={isLoading || isWalletLoading}
               >
                 {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}

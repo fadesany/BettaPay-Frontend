@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { Bell, Search, Menu, LogOut, Settings, KeyRound, Moon, Sun } from "lucide-react";
+import { Bell, Search, Menu, LogOut, Settings, KeyRound, Moon, Sun, Monitor, Repeat } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/lib/store/authStore";
+import { useWalletStore } from "@/lib/store/walletStore";
 import { useRouter } from "next/navigation";
 import { useNotify } from "@/lib/hooks/useNotify";
 
@@ -30,7 +31,7 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
   const { user, logout } = useAuthStore();
   const notify = useNotify();
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
   const notificationLabel =
     unreadNotificationCount > 0
@@ -47,10 +48,27 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
     setIsMounted(true);
   }, []);
 
-  const isDark = isMounted && theme === "dark";
+  const isDark = isMounted && resolvedTheme === "dark";
+
+  // Cycle: light → dark → system → light
+  const THEME_CYCLE: Array<"light" | "dark" | "system"> = ["light", "dark", "system"];
   const toggleTheme = useCallback(() => {
-    setTheme(isDark ? "light" : "dark");
-  }, [isDark, setTheme]);
+    const current = theme as "light" | "dark" | "system";
+    const next = THEME_CYCLE[(THEME_CYCLE.indexOf(current) + 1) % THEME_CYCLE.length];
+    setTheme(next);
+  }, [theme, setTheme]);
+
+  const themeIcon = !isMounted ? null : theme === "system"
+    ? <Monitor className="h-4.5 w-4.5" />
+    : isDark
+      ? <Sun className="h-4.5 w-4.5" />
+      : <Moon className="h-4.5 w-4.5" />;
+
+  const themeLabel = !isMounted ? "Toggle theme" : theme === "system"
+    ? "Using system theme — click for light"
+    : isDark
+      ? "Switch to system theme"
+      : "Switch to dark theme";
 
   const initials = user?.name
     ? user.name
@@ -60,6 +78,15 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
         .toUpperCase()
         .slice(0, 2)
     : "MC";
+
+  const walletNetwork = useWalletStore((s) => s.network);
+  const setNetwork = useWalletStore((s) => s.setNetwork);
+  const isTestnet = walletNetwork === 'testnet';
+  const isDev = process.env.NODE_ENV === 'development';
+
+  const handleToggleNetwork = useCallback(() => {
+    setNetwork(isTestnet ? 'public' : 'testnet');
+  }, [isTestnet, setNetwork]);
 
   return (
     <header
@@ -105,6 +132,27 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
           />
         </form>
 
+        {/* Network Indicator */}
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border bg-muted/50 text-xs font-medium">
+          <span
+            className={`w-2 h-2 rounded-full ${isTestnet ? 'bg-yellow-400' : 'bg-green-500'}`}
+            aria-hidden="true"
+          />
+          <span className="text-foreground">
+            {isTestnet ? 'Testnet' : 'Mainnet'}
+          </span>
+          {isDev && (
+            <button
+              onClick={handleToggleNetwork}
+              className="ml-1 p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={`Switch to ${isTestnet ? 'Mainnet' : 'Testnet'}`}
+              title={`Switch to ${isTestnet ? 'Mainnet' : 'Testnet'}`}
+            >
+              <Repeat className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+
         {/* Notifications */}
         <Button
           variant="ghost"
@@ -119,11 +167,11 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
         <Button
           variant="ghost"
           size="icon"
-          aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+          aria-label={themeLabel}
           className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl min-h-[44px] min-w-[44px]"
           onClick={toggleTheme}
         >
-          {isDark ? <Sun className="h-4.5 w-4.5" /> : <Moon className="h-4.5 w-4.5" />}
+          {themeIcon}
         </Button>
 
         {/* User menu */}
@@ -149,7 +197,7 @@ export const Topbar = ({ onMenuClick, isMenuOpen, title, unreadNotificationCount
             }
           />
           <DropdownMenuContent
-            className="w-56 border-border shadow-lg rounded-xl mt-1"
+            className="w-56 border-border shadow-dropdown rounded-xl mt-1"
             align="end"
           >
             <DropdownMenuLabel className="font-normal">

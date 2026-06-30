@@ -11,6 +11,7 @@ import { useNotify } from '@/lib/hooks/useNotify';
 import dynamic from 'next/dynamic';
 
 import { loginSchema, LoginFormValues } from '@/lib/utils/validation';
+import { normalizeEmail } from '@/lib/utils/sanitize';
 import { useAuthStore } from '@/lib/store/authStore';
 import { useRateLimitStore } from '@/lib/store/rateLimitStore';
 import { Button } from '@/components/ui/button';
@@ -51,8 +52,9 @@ export default function LoginPage() {
 
   const onSubmit = useCallback(async (data: LoginFormValues) => {
     setIsLoading(true);
+    const sanitizedData = { ...data, email: normalizeEmail(data.email) };
     try {
-      const isMockAdmin = data.email.includes('admin');
+      const isMockAdmin = sanitizedData.email.includes('admin');
       const role = isMockAdmin ? 'admin' : 'merchant';
       
       let merchantId = 'GCCHHKNI7GRA5QWC7RCTT3OHO7SKAUMKQA6IBWEQEO2SXI3GF376UHDD';
@@ -73,7 +75,7 @@ export default function LoginPage() {
       const mockToken = 'mock_jwt_token_12345';
       const mockUser = {
         id: merchantId,
-        email: data.email,
+        email: sanitizedData.email,
         name: merchantName,
         role,
       };
